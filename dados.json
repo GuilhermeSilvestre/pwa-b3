@@ -1,5 +1,12 @@
 {
   "conta_propria": {
+    "2021": [
+      { "mes": "Julho", "valor": -84.20 },
+      { "mes": "Setembro", "valor": -52.10 }
+    ],
+    "2022": [
+      { "mes": "Janeiro", "valor": -25.50 }
+    ],    
     "2025": [
       { "mes": "Janeiro", "valor": -17.50 },
       { "mes": "Fevereiro", "valor": 37.03 },
