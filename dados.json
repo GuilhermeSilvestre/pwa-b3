@@ -1,0 +1,19 @@
+{
+  "2025": [
+    { "mes": "Janeiro", "valor": -17.50 },
+    { "mes": "Fevereiro", "valor": 37.03 },
+    { "mes": "Março", "valor": -114.96 },
+    { "mes": "Abril", "valor": -418.38 },
+    { "mes": "Maio", "valor": 67.95 },
+    { "mes": "Junho", "valor": 15.32 },
+    { "mes": "Julho", "valor": 20.63 },
+    { "mes": "Agosto", "valor": -61.90 },
+    { "mes": "Setembro", "valor": 129.43 },
+    { "mes": "Outubro", "valor": 28.71 },
+    { "mes": "Novembro", "valor": -101.00 },
+    { "mes": "Dezembro", "valor": 175.59}
+  ],
+  "2026": [
+    { "mes": "Janeiro", "valor": 50.87 }
+  ]
+}
