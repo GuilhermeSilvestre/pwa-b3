@@ -138,6 +138,13 @@
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
       margin-bottom: 12px;
       text-align: center;
+      cursor: pointer; /* Modificado: indica que é clicável */
+      user-select: none;
+      transition: transform 0.1s ease, background-color 0.2s;
+    }
+
+    .main-card:active {
+      transform: scale(0.98); /* Efeito suave de clique */
     }
 
     .main-card .label {
@@ -158,6 +165,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
+      transition: all 0.3s ease;
     }
 
     .mini-card {
@@ -182,7 +190,7 @@
       display: flex;
       gap: 8px;
       margin-bottom: 16px;
-      overflow-x: auto; /* Se tiver muitos anos, permite rolar de ladinho no celular */
+      overflow-x: auto;
       padding-bottom: 4px;
     }
 
@@ -311,11 +319,11 @@
 
   <div id="secaoConta">
     <div class="kpi-container">
-      <div class="main-card">
+      <div class="main-card" onclick="alternarVisibilidade('gridStatsConta')">
         <div class="label">Saldo Total Acumulado</div>
         <div class="value" id="saldoTotal">R$ 0,00</div>
       </div>
-      <div class="grid-stats">
+      <div class="grid-stats" id="gridStatsConta">
         <div class="mini-card">
           <div class="label">Média Mensal</div>
           <div class="value" id="mediaMensal">R$ 0,00</div>
@@ -336,7 +344,7 @@
 
   <div id="secaoMesas" class="hidden">
     <div class="kpi-container">
-      <div class="main-card">
+      <div class="main-card" onclick="alternarVisibilidade('mesasContainer')">
         <div class="label">Total Bruto Mesas</div>
         <div class="value" id="saldoTotalMesas" style="color: var(--success);">R$ 0,00</div>
       </div>
@@ -347,11 +355,19 @@
 
   <script>
     let dadosGlobais = {};
-    let anoAtual = ''; // Começa vazio e pega o ano mais recente do JSON automaticamente
+    let anoAtual = ''; 
     let abaAtual = 'conta';
 
     function formatarMoeda(valor) {
       return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    // NOVA FUNÇÃO: Esconde/Exibe o elemento alvo ao clicar no card principal
+    function alternarVisibilidade(idElemento) {
+      const elemento = document.getElementById(idElemento);
+      if (elemento) {
+        elemento.classList.toggle('hidden');
+      }
     }
 
     function alternarAba(aba) {
@@ -372,22 +388,19 @@
       }
     }
 
-    // Altera o ano e atualiza os botões visuais
     function mudarAno(ano) {
       anoAtual = ano;
       gerarBotoesDeAno();
       renderConta();
     }
 
-    // NOVO: Gera os botões de anos dinamicamente com base no seu JSON
     function gerarBotoesDeAno() {
       const container = document.getElementById('anosFiltroContainer');
       container.innerHTML = '';
       
       const dadosConta = dadosGlobais.conta_propria || {};
-      const anosDisponiveis = Object.keys(dadosConta).sort(); // Pega os anos e ordena (2025, 2026, 2027...)
+      const anosDisponiveis = Object.keys(dadosConta).sort(); 
 
-      // Se o ano atual não foi definido ainda, pega o último cadastrado
       if (!anoAtual && anosDisponiveis.length > 0) {
         anoAtual = anosDisponiveis[anosDisponiveis.length - 1];
       }
@@ -544,7 +557,7 @@
         
         dadosGlobais = await response.json();
         calcularMetricasGerais();
-        gerarBotoesDeAno(); // Gera os filtros
+        gerarBotoesDeAno(); 
         renderConta();
       } catch (err) {
         console.error(err);
@@ -553,7 +566,7 @@
     }
 
     carregarDados();
-    // Registra o Service Worker para habilitar a instalação no Android
+    
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
@@ -561,7 +574,6 @@
           .catch(err => console.error('Erro ao registrar Service Worker:', err));
       });
     }
-    
   </script>
 </body>
 </html>
