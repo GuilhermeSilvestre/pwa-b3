@@ -7,7 +7,7 @@
   <link rel="apple-touch-icon" href="icon.png">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f172a">
-  <title>Desempenho B3</title>
+  <title>Desempenho Bolsa</title>
   <style>
     :root {
       --bg: #f8fafc;
@@ -21,6 +21,7 @@
       --success-bg: #ecfdf5;
       --danger: #ef4444;
       --danger-bg: #fef2f2;
+      --accent: #f1f5f9;
     }
 
     .dark {
@@ -35,6 +36,7 @@
       --success-bg: rgba(52, 211, 153, 0.1);
       --danger: #f87171;
       --danger-bg: rgba(248, 113, 113, 0.1);
+      --accent: #334155;
     }
 
     * {
@@ -48,7 +50,7 @@
       background: var(--bg);
       color: var(--text-main);
       padding: 24px 16px;
-      max-width: 600px; /* Otimizado para visualização mobile confortável */
+      max-width: 600px;
       margin: auto;
       transition: background 0.3s, color 0.3s;
     }
@@ -57,11 +59,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
     h1 {
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       font-weight: 700;
       letter-spacing: -0.025em;
     }
@@ -99,7 +101,31 @@
       background: var(--primary-hover);
     }
 
-    /* Cards de Métricas Extremamente Modernos */
+    .main-nav {
+      display: flex;
+      background: var(--accent);
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+
+    .nav-tab {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 12px;
+      border-radius: 9px;
+      font-weight: 600;
+      color: var(--text-muted);
+      justify-content: center;
+    }
+
+    .nav-tab.active {
+      background: var(--card);
+      color: var(--text-main);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
     .kpi-container {
       margin-bottom: 24px;
     }
@@ -152,15 +178,17 @@
       font-weight: 600;
     }
 
-    /* Filtros por Ano (Pills) */
     .filter-container {
       display: flex;
       gap: 8px;
       margin-bottom: 16px;
+      overflow-x: auto; /* Se tiver muitos anos, permite rolar de ladinho no celular */
+      padding-bottom: 4px;
     }
 
     .pill {
       flex: 1;
+      min-width: 80px;
       padding: 10px;
       border-radius: 12px;
       border: 1px solid var(--border);
@@ -178,7 +206,6 @@
       border-color: var(--text-main);
     }
 
-    /* Lista/Tabela Estilo Feed Moderno */
     .section-title {
       font-size: 1.1rem;
       font-weight: 600;
@@ -191,6 +218,7 @@
       border: 1px solid var(--border);
       border-radius: 16px;
       overflow: hidden;
+      margin-bottom: 24px;
     }
 
     .list-item {
@@ -236,6 +264,26 @@
       background: var(--danger-bg);
     }
 
+    .mesa-header {
+      background: var(--accent);
+      padding: 12px 16px;
+      font-weight: 700;
+      font-size: 1rem;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .mesa-header span {
+      font-weight: 400;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
     @media (max-width: 480px) {
       body {
         padding: 16px 12px;
@@ -249,66 +297,118 @@
 <body>
 
   <header>
-    <h1>Bolsa de Valores</h1>
+    <h1 id="appTitle">Desempenho na Bolsa</h1>
     <div class="top-buttons">
       <button id="themeBtn">🌙</button>
       <button id="exportBtn" class="btn-primary">💾 Exportar</button>
     </div>
   </header>
 
-  <div class="kpi-container">
-    <div class="main-card">
-      <div class="label">Saldo Total Acumulado</div>
-      <div class="value" id="saldoTotal">R$ 0,00</div>
+  <nav class="main-nav">
+    <button class="nav-tab active" id="tabConta" onclick="alternarAba('conta')">📈 Conta Própria</button>
+    <button class="nav-tab" id="tabMesas" onclick="alternarAba('mesas')">🏢 Mesas Proprietárias</button>
+  </nav>
+
+  <div id="secaoConta">
+    <div class="kpi-container">
+      <div class="main-card">
+        <div class="label">Saldo Total Acumulado</div>
+        <div class="value" id="saldoTotal">R$ 0,00</div>
+      </div>
+      <div class="grid-stats">
+        <div class="mini-card">
+          <div class="label">Média Mensal</div>
+          <div class="value" id="mediaMensal">R$ 0,00</div>
+        </div>
+        <div class="mini-card">
+          <div class="label">Meses Positivos</div>
+          <div class="value" id="taxaAcerto">0%</div>
+        </div>
+      </div>
     </div>
+
+    <div class="section-title">Histórico de Desempenho</div>
     
-    <div class="grid-stats">
-      <div class="mini-card">
-        <div class="label">Média Mensal</div>
-        <div class="value" id="mediaMensal">R$ 0,00</div>
-      </div>
-      <div class="mini-card">
-        <div class="label">Meses Positivos</div>
-        <div class="value" id="taxaAcerto">0%</div>
-      </div>
-    </div>
+    <div class="filter-container" id="anosFiltroContainer"></div>
+    
+    <div class="list-wrapper" id="historicoLista"></div>
   </div>
 
-  <div class="section-title">Histórico de Desempenho</div>
-
-  <div class="filter-container">
-    <div class="pill active" onclick="mudarAno('2025')" id="pill2025">2025</div>
-    <div class="pill" onclick="mudarAno('2026')" id="pill2026">2026</div>
-  </div>
-
-  <div class="list-wrapper" id="historicoLista">
+  <div id="secaoMesas" class="hidden">
+    <div class="kpi-container">
+      <div class="main-card">
+        <div class="label">Total Bruto Mesas</div>
+        <div class="value" id="saldoTotalMesas" style="color: var(--success);">R$ 0,00</div>
+      </div>
     </div>
+    <div class="section-title">Minhas Avaliações / Planos</div>
+    <div id="mesasContainer"></div>
+  </div>
 
   <script>
     let dadosGlobais = {};
-    let anoAtual = '2025';
+    let anoAtual = ''; // Começa vazio e pega o ano mais recente do JSON automaticamente
+    let abaAtual = 'conta';
 
-    // Formatação de Moeda Brasileira
     function formatarMoeda(valor) {
       return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
 
-    // Altera o ano de exibição
-    function mudarAno(ano) {
-      anoAtual = ano;
-      document.getElementById('pill2025').classList.toggle('active', ano === '2025');
-      document.getElementById('pill2026').classList.toggle('active', ano === '2026');
-      render();
+    function alternarAba(aba) {
+      abaAtual = aba;
+      document.getElementById('tabConta').classList.toggle('active', aba === 'conta');
+      document.getElementById('tabMesas').classList.toggle('active', aba === 'mesas');
+      
+      if (aba === 'conta') {
+        document.getElementById('secaoConta').classList.remove('hidden');
+        document.getElementById('secaoMesas').classList.add('hidden');
+        document.getElementById('appTitle').textContent = "Desempenho na Bolsa";
+        renderConta();
+      } else {
+        document.getElementById('secaoConta').classList.add('hidden');
+        document.getElementById('secaoMesas').classList.remove('hidden');
+        document.getElementById('appTitle').textContent = "Desempenho em Mesas";
+        renderMesas();
+      }
     }
 
-    function render() {
+    // Altera o ano e atualiza os botões visuais
+    function mudarAno(ano) {
+      anoAtual = ano;
+      gerarBotoesDeAno();
+      renderConta();
+    }
+
+    // NOVO: Gera os botões de anos dinamicamente com base no seu JSON
+    function gerarBotoesDeAno() {
+      const container = document.getElementById('anosFiltroContainer');
+      container.innerHTML = '';
+      
+      const dadosConta = dadosGlobais.conta_propria || {};
+      const anosDisponiveis = Object.keys(dadosConta).sort(); // Pega os anos e ordena (2025, 2026, 2027...)
+
+      // Se o ano atual não foi definido ainda, pega o último cadastrado
+      if (!anoAtual && anosDisponiveis.length > 0) {
+        anoAtual = anosDisponiveis[anosDisponiveis.length - 1];
+      }
+
+      anosDisponiveis.forEach(ano => {
+        const activeClass = ano === anoAtual ? 'active' : '';
+        container.innerHTML += `
+          <div class="pill ${activeClass}" onclick="mudarAno('${ano}')">${ano}</div>
+        `;
+      });
+    }
+
+    function renderConta() {
       const listaContainer = document.getElementById('historicoLista');
       listaContainer.innerHTML = '';
-
-      const mesesDoAno = dadosGlobais[anoAtual] || [];
+      
+      const dadosConta = dadosGlobais.conta_propria || {};
+      const mesesDoAno = dadosConta[anoAtual] || [];
 
       if (mesesDoAno.length === 0) {
-        listaContainer.innerHTML = `<div class="list-item" style="color:var(--text-muted)">Nenhum dado registrado para este ano.</div>`;
+        listaContainer.innerHTML = `<div class="list-item" style="color:var(--text-muted)">Nenhum dado registrado para o ano ${anoAtual}.</div>`;
         return;
       }
 
@@ -331,14 +431,65 @@
       });
     }
 
+    function renderMesas() {
+      const container = document.getElementById('mesasContainer');
+      container.innerHTML = '';
+
+      const listasMesas = dadosGlobais.mesas_proprietarias || [];
+
+      if (listasMesas.length === 0) {
+        container.innerHTML = `<div class="list-wrapper"><div class="list-item" style="color:var(--text-muted)">Nenhuma mesa cadastrada.</div></div>`;
+        return;
+      }
+
+      listasMesas.forEach(mesaData => {
+        let listaOperacoesHtml = '';
+        
+        if (mesaData.operacoes.length === 0) {
+          listaOperacoesHtml = `
+            <div class="list-item" style="color: var(--text-muted); font-style: italic; font-size: 0.9rem;">
+              Sem operações registradas ainda.
+            </div>`;
+        } else {
+          mesaData.operacoes.forEach(op => {
+            const ehPositivo = op.valor >= 0;
+            const sinal = ehPositivo ? '▲ ' : '▼ ';
+            const classeBadge = ehPositivo ? 'positivo' : 'negativo';
+            
+            listaOperacoesHtml += `
+              <div class="list-item">
+                <div class="item-info">
+                  <div class="mes">${op.mes}</div>
+                  <div class="sub">Valor Bruto • ${op.ano}</div>
+                </div>
+                <div class="badge ${classeBadge}">
+                  <span>${sinal}</span> ${formatarMoeda(op.valor)}
+                </div>
+              </div>
+            `;
+          });
+        }
+
+        container.innerHTML += `
+          <div class="list-wrapper">
+            <div class="mesa-header">
+              Mesa: ${mesaData.mesa}
+              <span>Plano: ${mesaData.plano}</span>
+            </div>
+            ${listaOperacoesHtml}
+          </div>
+        `;
+      });
+    }
+
     function calcularMetricasGerais() {
       let totalAcumulado = 0;
       let qtdMeses = 0;
       let mesesPositivos = 0;
+      const dadosConta = dadosGlobais.conta_propria || {};
 
-      // Percorre todos os anos do arquivo dinamicamente
-      Object.keys(dadosGlobais).forEach(ano => {
-        dadosGlobais[ano].forEach(item => {
+      Object.keys(dadosConta).forEach(ano => {
+        dadosConta[ano].forEach(item => {
           totalAcumulado += item.valor;
           qtdMeses++;
           if (item.valor > 0) mesesPositivos++;
@@ -348,17 +499,22 @@
       const media = qtdMeses > 0 ? (totalAcumulado / qtdMeses) : 0;
       const pctAcertos = qtdMeses > 0 ? Math.round((mesesPositivos / qtdMeses) * 100) : 0;
 
-      // Atualiza os elementos na tela
       const elSaldo = document.getElementById('saldoTotal');
       elSaldo.textContent = formatarMoeda(totalAcumulado);
-      // Muda a cor do card principal dependendo do resultado geral total
       elSaldo.style.color = totalAcumulado >= 0 ? 'var(--success)' : 'var(--danger)';
-
       document.getElementById('mediaMensal').textContent = formatarMoeda(media);
       document.getElementById('taxaAcerto').textContent = `${pctAcertos}% (${mesesPositivos}/${qtdMeses} M)`;
+
+      let totalMesas = 0;
+      const listasMesas = dadosGlobais.mesas_proprietarias || [];
+      listasMesas.forEach(mesaData => {
+        mesaData.operacoes.forEach(op => {
+          totalMesas += op.valor;
+        });
+      });
+      document.getElementById('saldoTotalMesas').textContent = formatarMoeda(totalMesas);
     }
 
-    // Exportação do JSON original
     document.getElementById('exportBtn').onclick = () => {
       const blob = new Blob([JSON.stringify(dadosGlobais, null, 2)], { type: 'application/json' });
       const a = document.createElement('a');
@@ -367,7 +523,6 @@
       a.click();
     };
 
-    // Controle de Tema (Dark/Light) inteligente
     if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.body.classList.add('dark');
       document.getElementById('themeBtn').textContent = '☀️';
@@ -382,7 +537,6 @@
       localStorage.setItem('theme', ehDark ? 'dark' : 'light');
     };
 
-    // Carregamento dos dados locais/remotos
     async function carregarDados() {
       try {
         const response = await fetch('./dados.json?v=' + Date.now());
@@ -390,11 +544,11 @@
         
         dadosGlobais = await response.json();
         calcularMetricasGerais();
-        render();
+        gerarBotoesDeAno(); // Gera os filtros
+        renderConta();
       } catch (err) {
         console.error(err);
-        // Fallback visual em caso de erro de leitura
-        document.getElementById('historicoLista').innerHTML = `<div class="list-item" style="color:var(--danger)">Erro ao ler dados.json. Certifique-se de que o arquivo existe e está no formato correto.</div>`;
+        document.getElementById('historicoLista').innerHTML = `<div class="list-item" style="color:var(--danger)">Erro ao ler dados.json.</div>`;
       }
     }
 
