@@ -138,7 +138,7 @@
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
       margin-bottom: 12px;
       text-align: center;
-      cursor: pointer; /* Feedback visual de clique */
+      cursor: pointer;
       user-select: none;
       transition: transform 0.1s ease;
     }
@@ -291,6 +291,107 @@
       display: none !important;
     }
 
+    /* ESTILOS NOVOS: Modal de Estratégias */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+
+    .modal-content {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+      animation: modalFadeIn 0.2s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .strat-meta-card {
+      background: var(--accent);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .strat-meta-card strong {
+      color: var(--text-main);
+    }
+
+    .strat-block {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .strat-block:last-child {
+      margin-bottom: 0;
+    }
+
+    .strat-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .strat-rule {
+      font-size: 0.9rem;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .strat-rule span {
+      font-weight: 700;
+    }
+
+    .rule-buy span { color: var(--success); }
+    .rule-sell span { color: var(--danger); }
+
+    .strat-obs {
+      font-size: 0.8rem;
+      background: var(--danger-bg);
+      color: var(--danger);
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
     @media (max-width: 480px) {
       body {
         padding: 16px 12px;
@@ -306,6 +407,7 @@
   <header>
     <h1 id="appTitle">Desempenho na Bolsa</h1>
     <div class="top-buttons">
+      <button id="stratBtn" onclick="toggleModal(true)">📋 Estratégias</button>
       <button id="themeBtn">🌙</button>
       <button id="exportBtn" class="btn-primary">💾 Exportar</button>
     </div>
@@ -352,16 +454,51 @@
     <div id="mesasContainer"></div>
   </div>
 
+  <div id="stratModal" class="modal-overlay hidden" onclick="toggleModal(false)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2 style="font-size: 1.1rem; font-weight: 700;">Estratégias Operacionais</h2>
+        <button onclick="toggleModal(false)" style="padding: 4px 8px; border-radius: 6px;">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="strat-meta-card">
+          • Ativo/Tempo: <strong>Mini Índice (WIN) • Gráfico de 1 min</strong><br>
+          • Horário de início: <strong>A partir das 09:20h</strong><br>
+          • Configuração OCO: <strong>150 pts / 250 pts</strong>
+        </div>
+
+        <div class="strat-block">
+          <div class="strat-title">1. Turtle 18 Hull Sar</div>
+          <div class="strat-rule rule-buy">
+            <span>Compra:</span> Fechamento acima da média aritmética (5) + acima da média Hull (18) + Parabolic SAR indicando alta. Entrada no fechamento.
+          </div>
+          <div class="strat-rule rule-sell">
+            <span>Venda:</span> Fechamento abaixo da média aritmética (5) + abaixo da média Hull (18) + Parabolic SAR indicando baixa. Entrada no fechamento.
+          </div>
+          <div class="strat-obs">
+            ⚠️ OBS: Máximo de 1 entrada para cada lado por dia (uma compra e uma venda). Feitas as duas operações, o dia está encerrado.
+          </div>
+        </div>
+
+        <div class="strat-block">
+          <div class="strat-title">2. Hilo 13 Exp 80</div>
+          <div class="strat-rule rule-buy">
+            <span>Compra:</span> Hilo verde + candle fechando acima da média exponencial de 80. Entrada no fechamento.
+          </div>
+          <div class="strat-rule rule-sell">
+            <span>Venda:</span> Hilo vermelho + candle fechando abaixo da média exponencial de 80. Entrada no fechamento.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     let dadosGlobais = {};
     let anoAtual = ''; 
     let abaAtual = 'conta';
     
-    // Variáveis de controle de visibilidade dos valores reais
-    let valoresOcultos = {
-      conta: false,
-      mesas: false
-    };
+    let valoresOcultos = { conta: false, mesas: false };
     let valorRealConta = 0;
     let valorRealMesas = 0;
 
@@ -369,10 +506,18 @@
       return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
 
-    // NOVA FUNÇÃO: Alterna a exibição entre o valor real e os asteriscos
+    // NOVA FUNÇÃO: Controle de abertura/fechamento do Modal
+    function toggleModal(abrir) {
+      const modal = document.getElementById('stratModal');
+      if (abrir) {
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
     function alternarOcultarSaldo(tipo) {
       valoresOcultos[tipo] = !valoresOcultos[tipo];
-      
       if (tipo === 'conta') {
         const el = document.getElementById('saldoTotal');
         el.textContent = valoresOcultos.conta ? '••••••' : formatarMoeda(valorRealConta);
@@ -409,7 +554,6 @@
     function gerarBotoesDeAno() {
       const container = document.getElementById('anosFiltroContainer');
       container.innerHTML = '';
-      
       const dadosConta = dadosGlobais.conta_propria || {};
       const anosDisponiveis = Object.keys(dadosConta).sort(); 
 
@@ -419,16 +563,13 @@
 
       anosDisponiveis.forEach(ano => {
         const activeClass = ano === anoAtual ? 'active' : '';
-        container.innerHTML += `
-          <div class="pill ${activeClass}" onclick="mudarAno('${ano}')">${ano}</div>
-        `;
+        container.innerHTML += `<div class="pill ${activeClass}" onclick="mudarAno('${ano}')">${ano}</div>`;
       });
     }
 
     function renderConta() {
       const listaContainer = document.getElementById('historicoLista');
       listaContainer.innerHTML = '';
-      
       const dadosConta = dadosGlobais.conta_propria || {};
       const mesesDoAno = dadosConta[anoAtual] || [];
 
@@ -441,16 +582,13 @@
         const ehPositivo = item.valor >= 0;
         const sinal = ehPositivo ? '▲ ' : '▼ ';
         const classeBadge = ehPositivo ? 'positivo' : 'negativo';
-
         listaContainer.innerHTML += `
           <div class="list-item">
             <div class="item-info">
               <div class="mes">${item.mes}</div>
               <div class="sub">Fechamento mensal • ${anoAtual}</div>
             </div>
-            <div class="badge ${classeBadge}">
-              <span>${sinal}</span> ${formatarMoeda(item.valor)}
-            </div>
+            <div class="badge ${classeBadge}"><span>${sinal}</span> ${formatarMoeda(item.valor)}</div>
           </div>
         `;
       });
@@ -459,7 +597,6 @@
     function renderMesas() {
       const container = document.getElementById('mesasContainer');
       container.innerHTML = '';
-
       const listasMesas = dadosGlobais.mesas_proprietarias || [];
 
       if (listasMesas.length === 0) {
@@ -469,38 +606,27 @@
 
       listasMesas.forEach(mesaData => {
         let listaOperacoesHtml = '';
-        
         if (mesaData.operacoes.length === 0) {
-          listaOperacoesHtml = `
-            <div class="list-item" style="color: var(--text-muted); font-style: italic; font-size: 0.9rem;">
-              Sem operações registradas ainda.
-            </div>`;
+          listaOperacoesHtml = `<div class="list-item" style="color: var(--text-muted); font-style: italic; font-size: 0.9rem;">Sem operações registradas ainda.</div>`;
         } else {
           mesaData.operacoes.forEach(op => {
             const ehPositivo = op.valor >= 0;
             const sinal = ehPositivo ? '▲ ' : '▼ ';
             const classeBadge = ehPositivo ? 'positivo' : 'negativo';
-            
             listaOperacoesHtml += `
               <div class="list-item">
                 <div class="item-info">
                   <div class="mes">${op.mes}</div>
                   <div class="sub">Valor Bruto • ${op.ano}</div>
                 </div>
-                <div class="badge ${classeBadge}">
-                  <span>${sinal}</span> ${formatarMoeda(op.valor)}
-                </div>
+                <div class="badge ${classeBadge}"><span>${sinal}</span> ${formatarMoeda(op.valor)}</div>
               </div>
             `;
           });
         }
-
         container.innerHTML += `
           <div class="list-wrapper">
-            <div class="mesa-header">
-              Mesa: ${mesaData.mesa}
-              <span>Plano: ${mesaData.plano}</span>
-            </div>
+            <div class="mesa-header">Mesa: ${mesaData.mesa} <span>Plano: ${mesaData.plano}</span></div>
             ${listaOperacoesHtml}
           </div>
         `;
@@ -524,9 +650,7 @@
       const media = qtdMeses > 0 ? (totalAcumulado / qtdMeses) : 0;
       const pctAcertos = qtdMeses > 0 ? Math.round((mesesPositivos / qtdMeses) * 100) : 0;
 
-      // Guarda o valor numérico real da conta
       valorRealConta = totalAcumulado;
-
       const elSaldo = document.getElementById('saldoTotal');
       elSaldo.textContent = valoresOcultos.conta ? '••••••' : formatarMoeda(totalAcumulado);
       elSaldo.style.color = totalAcumulado >= 0 ? 'var(--success)' : 'var(--danger)';
@@ -536,14 +660,10 @@
       let totalMesas = 0;
       const listasMesas = dadosGlobais.mesas_proprietarias || [];
       listasMesas.forEach(mesaData => {
-        mesaData.operacoes.forEach(op => {
-          totalMesas += op.valor;
-        });
+        mesaData.operacoes.forEach(op => { totalMesas += op.valor; });
       });
 
-      // Guarda o valor numérico real das mesas
       valorRealMesas = totalMesas;
-      
       const elSaldoMesas = document.getElementById('saldoTotalMesas');
       elSaldoMesas.textContent = valoresOcultos.mesas ? '••••••' : formatarMoeda(totalMesas);
     }
@@ -574,7 +694,6 @@
       try {
         const response = await fetch('./dados.json?v=' + Date.now());
         if (!response.ok) throw new Error('Erro ao carregar o arquivo JSON.');
-        
         dadosGlobais = await response.json();
         calcularMetricasGerais();
         gerarBotoesDeAno(); 
