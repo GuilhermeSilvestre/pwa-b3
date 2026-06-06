@@ -31,11 +31,24 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// Serve os arquivos direto do celular para abrir instantaneamente
+// Serve do cache imediatamente, mas atualiza o cache em segundo plano com a versão da rede
 self.addEventListener('fetch', (e) => {
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
-      return cachedResponse || fetch(e.request);
+      const fetchPromise = fetch(e.request).then((networkResponse) => {
+        // Se a resposta for válida, atualiza o cache
+        if (networkResponse && networkResponse.status === 200) {
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(e.request, networkResponse.clone());
+          });
+        }
+        return networkResponse;
+      }).catch(() => {
+        // Se estiver totalmente offline, não faz nada, apenas falha silenciosamente
+      });
+
+      // Retorna o cache imediatamente (se houver) ou espera a rede
+      return cachedResponse || fetchPromise;
     })
   );
 });
