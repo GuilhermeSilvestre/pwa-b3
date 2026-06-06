@@ -138,13 +138,13 @@
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
       margin-bottom: 12px;
       text-align: center;
-      cursor: pointer; /* Modificado: indica que é clicável */
+      cursor: pointer; /* Feedback visual de clique */
       user-select: none;
-      transition: transform 0.1s ease, background-color 0.2s;
+      transition: transform 0.1s ease;
     }
 
     .main-card:active {
-      transform: scale(0.98); /* Efeito suave de clique */
+      transform: scale(0.98);
     }
 
     .main-card .label {
@@ -165,7 +165,6 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
-      transition: all 0.3s ease;
     }
 
     .mini-card {
@@ -319,11 +318,11 @@
 
   <div id="secaoConta">
     <div class="kpi-container">
-      <div class="main-card" onclick="alternarVisibilidade('gridStatsConta')">
+      <div class="main-card" onclick="alternarOcultarSaldo('conta')">
         <div class="label">Saldo Total Acumulado</div>
         <div class="value" id="saldoTotal">R$ 0,00</div>
       </div>
-      <div class="grid-stats" id="gridStatsConta">
+      <div class="grid-stats">
         <div class="mini-card">
           <div class="label">Média Mensal</div>
           <div class="value" id="mediaMensal">R$ 0,00</div>
@@ -344,7 +343,7 @@
 
   <div id="secaoMesas" class="hidden">
     <div class="kpi-container">
-      <div class="main-card" onclick="alternarVisibilidade('mesasContainer')">
+      <div class="main-card" onclick="alternarOcultarSaldo('mesas')">
         <div class="label">Total Bruto Mesas</div>
         <div class="value" id="saldoTotalMesas" style="color: var(--success);">R$ 0,00</div>
       </div>
@@ -357,16 +356,29 @@
     let dadosGlobais = {};
     let anoAtual = ''; 
     let abaAtual = 'conta';
+    
+    // Variáveis de controle de visibilidade dos valores reais
+    let valoresOcultos = {
+      conta: false,
+      mesas: false
+    };
+    let valorRealConta = 0;
+    let valorRealMesas = 0;
 
     function formatarMoeda(valor) {
       return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
 
-    // NOVA FUNÇÃO: Esconde/Exibe o elemento alvo ao clicar no card principal
-    function alternarVisibilidade(idElemento) {
-      const elemento = document.getElementById(idElemento);
-      if (elemento) {
-        elemento.classList.toggle('hidden');
+    // NOVA FUNÇÃO: Alterna a exibição entre o valor real e os asteriscos
+    function alternarOcultarSaldo(tipo) {
+      valoresOcultos[tipo] = !valoresOcultos[tipo];
+      
+      if (tipo === 'conta') {
+        const el = document.getElementById('saldoTotal');
+        el.textContent = valoresOcultos.conta ? '••••••' : formatarMoeda(valorRealConta);
+      } else {
+        const el = document.getElementById('saldoTotalMesas');
+        el.textContent = valoresOcultos.mesas ? '••••••' : formatarMoeda(valorRealMesas);
       }
     }
 
@@ -512,8 +524,11 @@
       const media = qtdMeses > 0 ? (totalAcumulado / qtdMeses) : 0;
       const pctAcertos = qtdMeses > 0 ? Math.round((mesesPositivos / qtdMeses) * 100) : 0;
 
+      // Guarda o valor numérico real da conta
+      valorRealConta = totalAcumulado;
+
       const elSaldo = document.getElementById('saldoTotal');
-      elSaldo.textContent = formatarMoeda(totalAcumulado);
+      elSaldo.textContent = valoresOcultos.conta ? '••••••' : formatarMoeda(totalAcumulado);
       elSaldo.style.color = totalAcumulado >= 0 ? 'var(--success)' : 'var(--danger)';
       document.getElementById('mediaMensal').textContent = formatarMoeda(media);
       document.getElementById('taxaAcerto').textContent = `${pctAcertos}% (${mesesPositivos}/${qtdMeses} M)`;
@@ -525,7 +540,12 @@
           totalMesas += op.valor;
         });
       });
-      document.getElementById('saldoTotalMesas').textContent = formatarMoeda(totalMesas);
+
+      // Guarda o valor numérico real das mesas
+      valorRealMesas = totalMesas;
+      
+      const elSaldoMesas = document.getElementById('saldoTotalMesas');
+      elSaldoMesas.textContent = valoresOcultos.mesas ? '••••••' : formatarMoeda(totalMesas);
     }
 
     document.getElementById('exportBtn').onclick = () => {
