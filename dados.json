@@ -47,7 +47,11 @@
       "status": "Avaliação Fase 1",
       "qtd_contratos": 10,
       "daily_drawdown": 525.00,
-      "detalhes": null,
+      "detalhes": {
+        "plataforma_vencimento": "-",
+        "conta_profit": "-",
+        "repasse_inicio": "-"
+      },
       "operacoes": []
     }
   ]
