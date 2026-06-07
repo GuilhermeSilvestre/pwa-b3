@@ -29,6 +29,9 @@
     {
       "mesa": "Mide",
       "plano": "Exame Arrojado",
+      "status": "Ativo Conta Real",
+      "qtd_contratos": 20,
+      "daily_drawdown": 825.00,
       "detalhes": {
         "plataforma_vencimento": "Vence dia 23",
         "conta_profit": "103084217",
@@ -41,6 +44,9 @@
     {
       "mesa": "Mide",
       "plano": "Exame Conservador",
+      "status": "Avaliação Fase 1",
+      "qtd_contratos": 10,
+      "daily_drawdown": 525.00,
       "detalhes": null,
       "operacoes": []
     }
