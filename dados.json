@@ -29,13 +29,19 @@
     {
       "mesa": "Mide",
       "plano": "Exame Arrojado",
+      "detalhes": {
+        "plataforma_vencimento": "Vence dia 23",
+        "conta_profit": "103084217",
+        "repasse_inicio": "29/05"
+      },
       "operacoes": [
         { "mes": "Junho", "ano": "2026", "valor": 460.00 }
       ]
     },
     {
       "mesa": "Mide",
-      "plano": "Exame Agressivo",
+      "plano": "Exame Conservador",
+      "detalhes": null,
       "operacoes": []
     }
   ]
