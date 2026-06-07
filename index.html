@@ -22,6 +22,8 @@
       --danger: #ef4444;
       --danger-bg: #fef2f2;
       --accent: #f1f5f9;
+      --warning: #f59e0b;
+      --warning-bg: #fffbeb;
     }
 
     .dark {
@@ -37,6 +39,8 @@
       --danger: #f87171;
       --danger-bg: rgba(248, 113, 113, 0.1);
       --accent: #334155;
+      --warning: #fbbf24;
+      --warning-bg: rgba(251, 191, 36, 0.1);
     }
 
     * {
@@ -228,7 +232,6 @@
       margin-bottom: 24px;
     }
 
-    /* Modificado para permitir clique na mesa/plano */
     .list-wrapper.clicavel .mesa-header {
       cursor: pointer;
       user-select: none;
@@ -286,6 +289,23 @@
       background: var(--danger-bg);
     }
 
+    /* Estilos das tags de status */
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .status-badge.ativo {
+      color: var(--success);
+      background: var(--success-bg);
+    }
+    .status-badge.avaliacao {
+      color: var(--warning);
+      background: var(--warning-bg);
+    }
+
     .mesa-header {
       background: var(--accent);
       padding: 12px 16px;
@@ -293,13 +313,29 @@
       font-size: 1rem;
       display: flex;
       justify-content: space-between;
+      align-items: center;
       border-bottom: 1px solid var(--border);
     }
     
-    .mesa-header span {
+    .mesa-header .plano-info {
       font-weight: 400;
       font-size: 0.85rem;
       color: var(--text-muted);
+      text-align: right;
+    }
+
+    .mesa-meta-info {
+      background: var(--card);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 16px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .mesa-meta-info strong {
+      color: var(--text-main);
     }
 
     .hidden {
@@ -363,7 +399,6 @@
       color: var(--text-main);
     }
 
-    /* ESTILOS NOVOS: Tabela/Cards explicativos de Repasse */
     .repasse-tabela {
       width: 100%;
       border-collapse: collapse;
@@ -443,13 +478,17 @@
       .main-card .value {
         font-size: 1.9rem;
       }
+      .mesa-meta-info {
+        gap: 8px;
+        font-size: 0.75rem;
+      }
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1 id="appTitle">Desempenho na Bolsa</h1>
+    <h1 id="appTitle">Desempenho Bolsa</h1>
     <div class="top-buttons">
       <button id="stratBtn" onclick="toggleModal(true)">📋 Estratégias</button>
       <button id="themeBtn">🌙</button>
@@ -585,7 +624,7 @@
         </div>
         <div class="exemplo-box" style="border-left-color: var(--success); background: rgba(16, 185, 129, 0.05)">
           <strong>Conta Real (Início em 29/05):</strong><br>
-          A apuração é automática. O repasse será calculado e efetuado diretamente entre os dias 30 a 05 de Julho.
+          A apuração é automática. O repasse será calculated e efetuado diretamente entre os dias 30 a 05 de Julho.
         </div>
       </div>
     </div>
@@ -610,14 +649,12 @@
       else modal.classList.add('hidden');
     }
 
-    // NOVA FUNÇÃO: Controla exibição do modal de detalhes do plano
     function togglePlanoModal(abrir) {
       const modal = document.getElementById('planoModal');
       if (abrir) modal.classList.remove('hidden');
       else modal.classList.add('hidden');
     }
 
-    // NOVA FUNÇÃO: Alimenta o modal de detalhes com as informações do plano clicado
     function abrirDetalhesPlano(indexMesa) {
       const planoData = dadosGlobais.mesas_proprietarias[indexMesa];
       if (!planoData || !planoData.detalhes) return;
@@ -720,7 +757,7 @@
 
       listasMesas.forEach((mesaData, index) => {
         let listaOperacoesHtml = '';
-        if (mesaData.operacoes.length === 0) {
+        if (!mesaData.operacoes || mesaData.operacoes.length === 0) {
           listaOperacoesHtml = `<div class="list-item" style="color: var(--text-muted); font-style: italic; font-size: 0.9rem;">Sem operações registradas ainda.</div>`;
         } else {
           mesaData.operacoes.forEach(op => {
@@ -739,15 +776,31 @@
           });
         }
 
-        // Se contiver detalhes no JSON, adicionamos a classe 'clicavel' e o evento onclick
         const temDetalhes = mesaData.detalhes ? true : false;
         const classeClicavel = temDetalhes ? 'clicavel' : '';
         const acaoClique = temDetalhes ? `onclick="abrirDetalhesPlano(${index})"` : '';
         const textoInformativo = temDetalhes ? ' 🔍' : '';
 
+        // Definindo classe de cor baseada no status
+        let classeStatus = 'avaliacao';
+        if(mesaData.status && mesaData.status.toLowerCase().includes('real')) {
+          classeStatus = 'ativo';
+        }
+
+        const statusHtml = mesaData.status ? `<span class="status-badge ${classeStatus}">${mesaData.status}</span>` : '';
+        const contratosHtml = mesaData.qtd_contratos ? `<div>Contratos: <strong>${mesaData.qtd_contratos}</strong></div>` : '';
+        const drawdownHtml = mesaData.daily_drawdown ? `<div>Daily Drawdown: <strong style="color:var(--danger)">${formatarMoeda(mesaData.daily_drawdown)}</strong></div>` : '';
+
         container.innerHTML += `
           <div class="list-wrapper ${classeClicavel}">
-            <div class="mesa-header" ${acaoClique}>Mesa: ${mesaData.mesa}${textoInformativo} <span>Plano: ${mesaData.plano}</span></div>
+            <div class="mesa-header" ${acaoClique}>
+              <div>Mesa: ${mesaData.mesa}${textoInformativo}</div>
+              <div class="plano-info">Plano: ${mesaData.plano} <br> ${statusHtml}</div>
+            </div>
+            <div class="mesa-meta-info">
+              ${contratosHtml}
+              ${drawdownHtml}
+            </div>
             ${listaOperacoesHtml}
           </div>
         `;
@@ -781,7 +834,9 @@
       let totalMesas = 0;
       const listasMesas = dadosGlobais.mesas_proprietarias || [];
       listasMesas.forEach(mesaData => {
-        mesaData.operacoes.forEach(op => { totalMesas += op.valor; });
+        if(mesaData.operacoes) {
+          mesaData.operacoes.forEach(op => { totalMesas += op.valor; });
+        }
       });
 
       valorRealMesas = totalMesas;
