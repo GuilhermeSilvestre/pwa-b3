@@ -228,6 +228,21 @@
       margin-bottom: 24px;
     }
 
+    /* Modificado para permitir clique na mesa/plano */
+    .list-wrapper.clicavel .mesa-header {
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s;
+    }
+    
+    .list-wrapper.clicavel .mesa-header:hover {
+      background: var(--border);
+    }
+    
+    .list-wrapper.clicavel .mesa-header:active {
+      opacity: 0.8;
+    }
+
     .list-item {
       display: flex;
       justify-content: space-between;
@@ -291,7 +306,6 @@
       display: none !important;
     }
 
-    /* ESTILOS NOVOS: Modal de Estratégias */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -347,6 +361,36 @@
 
     .strat-meta-card strong {
       color: var(--text-main);
+    }
+
+    /* ESTILOS NOVOS: Tabela/Cards explicativos de Repasse */
+    .repasse-tabela {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 0.85rem;
+    }
+
+    .repasse-tabela th, .repasse-tabela td {
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .repasse-tabela th {
+      background: var(--accent);
+      font-weight: 700;
+    }
+
+    .exemplo-box {
+      background: rgba(37, 99, 235, 0.05);
+      border-left: 4px solid var(--primary);
+      padding: 12px;
+      border-radius: 4px 12px 12px 4px;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      color: var(--text-main);
+      margin-top: 10px;
     }
 
     .strat-block {
@@ -437,9 +481,7 @@
     </div>
 
     <div class="section-title">Histórico de Desempenho</div>
-    
     <div class="filter-container" id="anosFiltroContainer"></div>
-    
     <div class="list-wrapper" id="historicoLista"></div>
   </div>
 
@@ -450,7 +492,7 @@
         <div class="value" id="saldoTotalMesas" style="color: var(--success);">R$ 0,00</div>
       </div>
     </div>
-    <div class="section-title">Minhas Avaliações / Planos</div>
+    <div class="section-title">Minhas Avaliações / Planos (Clique p/ ver regras)</div>
     <div id="mesasContainer"></div>
   </div>
 
@@ -494,6 +536,61 @@
     </div>
   </div>
 
+  <div id="planoModal" class="modal-overlay hidden" onclick="togglePlanoModal(false)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2 id="planoModalTitulo" style="font-size: 1.1rem; font-weight: 700;">Detalhes da Conta</h2>
+        <button onclick="togglePlanoModal(false)" style="padding: 4px 8px; border-radius: 6px;">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="strat-block" style="background: var(--card); border-color: var(--primary);">
+          <div class="strat-title" style="margin-bottom: 5px;">Dados de Acesso e Ciclo</div>
+          <div class="strat-rule" style="margin-bottom: 4px;">🖥️ <strong>Plataforma:</strong> <span id="detalhePlataforma" style="font-weight:normal; color:var(--text-main)">-</span></div>
+          <div class="strat-rule" style="margin-bottom: 4px;">🔑 <strong>Conta Profit:</strong> <span id="detalheConta" style="font-weight:normal; color:var(--text-main)">-</span></div>
+          <div class="strat-rule" style="margin-bottom: 0;">📅 <strong>Ciclo Iniciado:</strong> <span id="detalheRepasse" style="font-weight:normal; color:var(--text-main)">-</span></div>
+        </div>
+
+        <div class="section-title" style="margin-top: 20px; font-size:0.95rem;">Como funciona o Repasse?</div>
+        <p style="font-size:0.85rem; line-height:1.4; margin-bottom:8px;">
+          ⚠️ É necessário operar no mínimo <strong>5 pregões</strong> no ciclo atual para poder solicitar o saque.
+        </p>
+
+        <table class="repasse-tabela">
+          <thead>
+            <tr>
+              <th>Início do Ciclo</th>
+              <th>Período de Pagamento</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Entre os dias 30 e 09</td>
+              <td>Entre os dias 10 e 15</td>
+            </tr>
+            <tr>
+              <td>Entre os dias 10 e 19</td>
+              <td>Entre os dias 20 e 25</td>
+            </tr>
+            <tr>
+              <td>Entre os dias 20 e 29</td>
+              <td>Entre os dias 30 e 05</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="section-title" style="margin-top: 15px; font-size:0.95rem;">Exemplos Práticos:</div>
+        <div class="exemplo-box">
+          <strong>Simulador Remunerado (Início em 29/05):</strong><br>
+          O trader deverá solicitar o repasse via sistema exatamente até o dia 29/06. O pagamento correspondente será efetuado na janela entre os dias 30 a 05 de Julho.
+        </div>
+        <div class="exemplo-box" style="border-left-color: var(--success); background: rgba(16, 185, 129, 0.05)">
+          <strong>Conta Real (Início em 29/05):</strong><br>
+          A apuração é automática. O repasse será calculado e efetuado diretamente entre os dias 30 a 05 de Julho.
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     let dadosGlobais = {};
     let anoAtual = ''; 
@@ -507,14 +604,30 @@
       return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
 
-    // NOVA FUNÇÃO: Controle de abertura/fechamento do Modal
     function toggleModal(abrir) {
       const modal = document.getElementById('stratModal');
-      if (abrir) {
-        modal.classList.remove('hidden');
-      } else {
-        modal.classList.add('hidden');
-      }
+      if (abrir) modal.classList.remove('hidden');
+      else modal.classList.add('hidden');
+    }
+
+    // NOVA FUNÇÃO: Controla exibição do modal de detalhes do plano
+    function togglePlanoModal(abrir) {
+      const modal = document.getElementById('planoModal');
+      if (abrir) modal.classList.remove('hidden');
+      else modal.classList.add('hidden');
+    }
+
+    // NOVA FUNÇÃO: Alimenta o modal de detalhes com as informações do plano clicado
+    function abrirDetalhesPlano(indexMesa) {
+      const planoData = dadosGlobais.mesas_proprietarias[indexMesa];
+      if (!planoData || !planoData.detalhes) return;
+
+      document.getElementById('planoModalTitulo').textContent = `${planoData.mesa} • ${planoData.plano}`;
+      document.getElementById('detalhePlataforma').textContent = planoData.detalhes.plataforma_vencimento;
+      document.getElementById('detalheConta').textContent = planoData.detalhes.conta_profit;
+      document.getElementById('detalheRepasse').textContent = planoData.detalhes.repasse_inicio;
+
+      togglePlanoModal(true);
     }
 
     function alternarOcultarSaldo(tipo) {
@@ -605,7 +718,7 @@
         return;
       }
 
-      listasMesas.forEach(mesaData => {
+      listasMesas.forEach((mesaData, index) => {
         let listaOperacoesHtml = '';
         if (mesaData.operacoes.length === 0) {
           listaOperacoesHtml = `<div class="list-item" style="color: var(--text-muted); font-style: italic; font-size: 0.9rem;">Sem operações registradas ainda.</div>`;
@@ -625,9 +738,16 @@
             `;
           });
         }
+
+        // Se contiver detalhes no JSON, adicionamos a classe 'clicavel' e o evento onclick
+        const temDetalhes = mesaData.detalhes ? true : false;
+        const classeClicavel = temDetalhes ? 'clicavel' : '';
+        const acaoClique = temDetalhes ? `onclick="abrirDetalhesPlano(${index})"` : '';
+        const textoInformativo = temDetalhes ? ' 🔍' : '';
+
         container.innerHTML += `
-          <div class="list-wrapper">
-            <div class="mesa-header">Mesa: ${mesaData.mesa} <span>Plano: ${mesaData.plano}</span></div>
+          <div class="list-wrapper ${classeClicavel}">
+            <div class="mesa-header" ${acaoClique}>Mesa: ${mesaData.mesa}${textoInformativo} <span>Plano: ${mesaData.plano}</span></div>
             ${listaOperacoesHtml}
           </div>
         `;
