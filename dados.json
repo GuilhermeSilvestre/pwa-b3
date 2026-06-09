@@ -48,6 +48,20 @@
       "qtd_contratos": 10,
       "daily_drawdown": 525.00,
       "detalhes": {
+        "plataforma_vencimento": "Vence dia 9",
+        "conta_profit": "103155299",
+        "repasse_inicio": "-"
+      },
+      "operacoes": []
+    },
+    {
+      "mesa": "Euroinvest",
+      "plano": "Europass 5",
+      "status": "Encerrado",
+      "qtd_contratos": 5,
+      "daily_drawdown": 375.00,
+      "lucro_total_encerrada": 0.0,
+      "detalhes": {
         "plataforma_vencimento": "-",
         "conta_profit": "-",
         "repasse_inicio": "-"
