@@ -57,6 +57,7 @@
       max-width: 600px;
       margin: auto;
       transition: background 0.3s, color 0.3s;
+      overflow-x: hidden; /* Evita que o scroll horizontal do swipe quebre a tela */
     }
 
     header {
@@ -232,6 +233,12 @@
       margin-bottom: 24px;
     }
 
+    /* Estilo opaco para mesas arquivadas/encerradas */
+    .list-wrapper.encerrada-wrapper {
+      opacity: 0.6;
+      border-style: dashed;
+    }
+
     .list-wrapper.clicavel .mesa-header {
       cursor: pointer;
       user-select: none;
@@ -305,6 +312,10 @@
       color: var(--warning);
       background: var(--warning-bg);
     }
+    .status-badge.encerrado {
+      color: var(--text-muted);
+      background: var(--accent);
+    }
 
     .mesa-header {
       background: var(--accent);
@@ -329,6 +340,7 @@
       padding: 10px 16px;
       border-bottom: 1px solid var(--border);
       display: flex;
+      flex-wrap: wrap;
       gap: 16px;
       font-size: 0.8rem;
       color: var(--text-muted);
@@ -748,16 +760,39 @@
     function renderMesas() {
       const container = document.getElementById('mesasContainer');
       container.innerHTML = '';
-      const listasMesas = dadosGlobais.mesas_proprietarias || [];
+      
+      // Mapeia e armazena o index original de cada mesa para o Modal funcionar direito
+      let listasMesas = (dadosGlobais.mesas_proprietarias || []).map((mesa, index) => {
+        return { ...mesa, originalIndex: index };
+      });
 
       if (listasMesas.length === 0) {
         container.innerHTML = `<div class="list-wrapper"><div class="list-item" style="color:var(--text-muted)">Nenhuma mesa cadastrada.</div></div>`;
         return;
       }
 
-      listasMesas.forEach((mesaData, index) => {
+      // LOGICA SOLICITADA: Ordena jogando status "Encerrado" para baixo
+      listasMesas.sort((a, b) => {
+        const statusA = (a.status || '').toLowerCase();
+        const statusB = (b.status || '').toLowerCase();
+        if (statusA === 'encerrado' && statusB !== 'encerrado') return 1;
+        if (statusA !== 'encerrado' && statusB === 'encerrado') return -1;
+        return 0;
+      });
+
+      listasMesas.forEach((mesaData) => {
         let listaOperacoesHtml = '';
-        if (!mesaData.operacoes || mesaData.operacoes.length === 0) {
+        const ehEncerrada = (mesaData.status || '').toLowerCase() === 'encerrado';
+
+        if (ehEncerrada) {
+          // Exibe o novo campo customizado para contas que foram paradas
+          const lucroEncerrada = mesaData.lucro_total_encerrada || 0;
+          listaOperacoesHtml = `
+            <div class="list-item" style="color: var(--text-muted); font-size: 0.9rem;">
+              <div>Fim do ciclo da conta.</div>
+              <div>Lucro Total: <strong>${formatarMoeda(lucroEncerrada)}</strong></div>
+            </div>`;
+        } else if (!mesaData.operacoes || mesaData.operacoes.length === 0) {
           listaOperacoesHtml = `<div class="list-item" style="color: var(--text-muted); font-style: italic; font-size: 0.9rem;">Sem operações registradas ainda.</div>`;
         } else {
           mesaData.operacoes.forEach(op => {
@@ -778,21 +813,24 @@
 
         const temDetalhes = mesaData.detalhes ? true : false;
         const classeClicavel = temDetalhes ? 'clicavel' : '';
-        const acaoClique = temDetalhes ? `onclick="abrirDetalhesPlano(${index})"` : '';
+        const acaoClique = temDetalhes ? `onclick="abrirDetalhesPlano(${mesaData.originalIndex})"` : '';
         const textoInformativo = temDetalhes ? ' 🔍' : '';
 
         // Definindo classe de cor baseada no status
         let classeStatus = 'avaliacao';
-        if(mesaData.status && mesaData.status.toLowerCase().includes('real')) {
+        if (ehEncerrada) {
+          classeStatus = 'encerrado';
+        } else if (mesaData.status && mesaData.status.toLowerCase().includes('real')) {
           classeStatus = 'ativo';
         }
 
         const statusHtml = mesaData.status ? `<span class="status-badge ${classeStatus}">${mesaData.status}</span>` : '';
         const contratosHtml = mesaData.qtd_contratos ? `<div>Contratos: <strong>${mesaData.qtd_contratos}</strong></div>` : '';
         const drawdownHtml = mesaData.daily_drawdown ? `<div>Daily Drawdown: <strong style="color:var(--danger)">${formatarMoeda(mesaData.daily_drawdown)}</strong></div>` : '';
+        const wrapperClasseExtra = ehEncerrada ? 'encerrada-wrapper' : '';
 
         container.innerHTML += `
-          <div class="list-wrapper ${classeClicavel}">
+          <div class="list-wrapper ${classeClicavel} ${wrapperClasseExtra}">
             <div class="mesa-header" ${acaoClique}>
               <div>Mesa: ${mesaData.mesa}${textoInformativo}</div>
               <div class="plano-info">Plano: ${mesaData.plano} <br> ${statusHtml}</div>
@@ -826,22 +864,26 @@
 
       valorRealConta = totalAcumulado;
       const elSaldo = document.getElementById('saldoTotal');
-      elSaldo.textContent = valoresOcultos.conta ? '••••••' : formatarMoeda(totalAcumulado);
-      elSaldo.style.color = totalAcumulado >= 0 ? 'var(--success)' : 'var(--danger)';
+      if (elSaldo) {
+        elSaldo.textContent = valoresOcultos.conta ? '••••••' : formatarMoeda(totalAcumulado);
+        elSaldo.style.color = totalAcumulado >= 0 ? 'var(--success)' : 'var(--danger)';
+      }
       document.getElementById('mediaMensal').textContent = formatarMoeda(media);
       document.getElementById('taxaAcerto').textContent = `${pctAcertos}% (${mesesPositivos}/${qtdMeses} M)`;
 
       let totalMesas = 0;
       const listasMesas = dadosGlobais.mesas_proprietarias || [];
       listasMesas.forEach(mesaData => {
-        if(mesaData.operacoes) {
+        if (mesaData.operacoes) {
           mesaData.operacoes.forEach(op => { totalMesas += op.valor; });
         }
       });
 
       valorRealMesas = totalMesas;
       const elSaldoMesas = document.getElementById('saldoTotalMesas');
-      elSaldoMesas.textContent = valoresOcultos.mesas ? '••••••' : formatarMoeda(totalMesas);
+      if (elSaldoMesas) {
+        elSaldoMesas.textContent = valoresOcultos.mesas ? '••••••' : formatarMoeda(totalMesas);
+      }
     }
 
     document.getElementById('exportBtn').onclick = () => {
@@ -879,6 +921,33 @@
         document.getElementById('historicoLista').innerHTML = `<div class="list-item" style="color:var(--danger)">Erro ao ler dados.json.</div>`;
       }
     }
+
+    // ==========================================
+    // LOGICA DO SLIDER EM DISPOSITIVOS MÓVEIS (SWIPE GESTURE)
+    // ==========================================
+    let startX = 0;
+    let startY = 0;
+
+    window.addEventListener('touchstart', function(e) {
+      startX = e.changedTouches[0].screenX;
+      startY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    window.addEventListener('touchend', function(e) {
+      let diffX = e.changedTouches[0].screenX - startX;
+      let diffY = e.changedTouches[0].screenY - startY;
+
+      // Garante que o usuário quis arrastar pro lado e não pra baixo/cima
+      if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 60) {
+        if (diffX > 0 && abaAtual === 'mesas') {
+          // Deslizou para a Direita -> Vai para Conta Própria
+          alternarAba('conta');
+        } else if (diffX < 0 && abaAtual === 'conta') {
+          // Deslizou para a Esquerda -> Vai para Mesas Proprietárias
+          alternarAba('mesas');
+        }
+      }
+    }, { passive: true });
 
     carregarDados();
     
