@@ -314,7 +314,7 @@
     }
     .status-badge.encerrado {
       color: var(--text-muted);
-      background: var(--accent);
+      background: var(--danger-bg);
     }
 
     .mesa-header {
@@ -598,6 +598,7 @@
           <div class="strat-title" style="margin-bottom: 5px;">Dados de Acesso e Ciclo</div>
           <div class="strat-rule" style="margin-bottom: 4px;">🖥️ <strong>Plataforma:</strong> <span id="detalhePlataforma" style="font-weight:normal; color:var(--text-main)">-</span></div>
           <div class="strat-rule" style="margin-bottom: 4px;">🔑 <strong>Conta Profit:</strong> <span id="detalheConta" style="font-weight:normal; color:var(--text-main)">-</span></div>
+          <div class="strat-rule" style="margin-bottom: 4px;">💰 <strong>Valor do Plano:</strong> <span id="detalheValorPlano" style="font-weight:normal; color:var(--text-main)">-</span></div>
           <div class="strat-rule" style="margin-bottom: 0;">📅 <strong>Ciclo Iniciado:</strong> <span id="detalheRepasse" style="font-weight:normal; color:var(--text-main)">-</span></div>
         </div>
 
@@ -674,6 +675,7 @@
       document.getElementById('planoModalTitulo').textContent = `${planoData.mesa} • ${planoData.plano}`;
       document.getElementById('detalhePlataforma').textContent = planoData.detalhes.plataforma_vencimento;
       document.getElementById('detalheConta').textContent = planoData.detalhes.conta_profit;
+      document.getElementById('detalheValorPlano').textContent = formatarMoeda(planoData.detalhes.valor_plano || 0);
       document.getElementById('detalheRepasse').textContent = planoData.detalhes.repasse_inicio;
 
       togglePlanoModal(true);
@@ -773,11 +775,17 @@
 
       // LOGICA SOLICITADA: Ordena jogando status "Encerrado" para baixo
       listasMesas.sort((a, b) => {
-        const statusA = (a.status || '').toLowerCase();
-        const statusB = (b.status || '').toLowerCase();
-        if (statusA === 'encerrado' && statusB !== 'encerrado') return 1;
-        if (statusA !== 'encerrado' && statusB === 'encerrado') return -1;
-        return 0;
+        const prioridade = (status) => {
+          status = (status || '').toLowerCase();
+      
+          if (status.includes('ativ')) return 1;
+          if (status.includes('avalia')) return 2;
+          if (status.includes('encerrado')) return 3;
+      
+          return 99;
+        };
+      
+        return prioridade(a.status) - prioridade(b.status);
       });
 
       listasMesas.forEach((mesaData) => {
