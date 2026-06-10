@@ -6,7 +6,7 @@
     ],
     "2022": [
       { "mes": "Janeiro", "valor": -25.50 }
-    ],    
+    ],
     "2025": [
       { "mes": "Janeiro", "valor": -17.50 },
       { "mes": "Fevereiro", "valor": 37.03 },
@@ -33,6 +33,7 @@
       "qtd_contratos": 20,
       "daily_drawdown": 825.00,
       "detalhes": {
+        "valor_plano": 220.00,
         "plataforma_vencimento": "Vence dia 23",
         "conta_profit": "103084217",
         "repasse_inicio": "29/05"
@@ -48,6 +49,21 @@
       "qtd_contratos": 10,
       "daily_drawdown": 525.00,
       "detalhes": {
+        "valor_plano": 230.00,
+        "plataforma_vencimento": "Vence dia 9",
+        "conta_profit": "103155299",
+        "repasse_inicio": "-"
+      },
+      "operacoes": []
+    },
+    {
+      "mesa": "Mide",
+      "plano": "Exame Conservador",
+      "status": "Encerrado",
+      "qtd_contratos": 10,
+      "daily_drawdown": 525.00,
+      "detalhes": {
+        "valor_plano": 180.00,
         "plataforma_vencimento": "Vence dia 9",
         "conta_profit": "103155299",
         "repasse_inicio": "-"
@@ -62,6 +78,7 @@
       "daily_drawdown": 375.00,
       "lucro_total_encerrada": 0.0,
       "detalhes": {
+        "valor_plano": 280.00,
         "plataforma_vencimento": "-",
         "conta_profit": "-",
         "repasse_inicio": "-"
