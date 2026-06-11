@@ -57,7 +57,7 @@
       max-width: 600px;
       margin: auto;
       transition: background 0.3s, color 0.3s;
-      overflow-x: hidden; /* Evita que o scroll horizontal do swipe quebre a tela */
+      overflow-x: hidden;
     }
 
     header {
@@ -233,7 +233,6 @@
       margin-bottom: 24px;
     }
 
-    /* Estilo opaco para mesas arquivadas/encerradas */
     .list-wrapper.encerrada-wrapper {
       opacity: 0.6;
       border-style: dashed;
@@ -296,7 +295,6 @@
       background: var(--danger-bg);
     }
 
-    /* Estilos das tags de status */
     .status-badge {
       padding: 4px 8px;
       border-radius: 6px;
@@ -411,6 +409,39 @@
       color: var(--text-main);
     }
 
+    /* Estilos do Bloco de Repasse Retrátil Operacional (Mobile Safe) */
+    .repasse-accordion {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .repasse-accordion-btn {
+      width: 100%;
+      background: var(--warning-bg);
+      color: var(--warning);
+      border: none;
+      padding: 14px 16px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 14px;
+    }
+
+    .dark .repasse-accordion-btn {
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    .repasse-accordion-content {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+      background: var(--card);
+    }
+
     .repasse-tabela {
       width: 100%;
       border-collapse: collapse;
@@ -494,6 +525,12 @@
         gap: 8px;
         font-size: 0.75rem;
       }
+      .repasse-tabela {
+        font-size: 0.75rem;
+      }
+      .repasse-tabela th, .repasse-tabela td {
+        padding: 6px 6px;
+      }
     }
   </style>
 </head>
@@ -513,6 +550,7 @@
     <button class="nav-tab" id="tabMesas" onclick="alternarAba('mesas')">🏢 Mesas Proprietárias</button>
   </nav>
 
+  <!-- SEÇÃO CONTA PRÓPRIA -->
   <div id="secaoConta">
     <div class="kpi-container">
       <div class="main-card" onclick="alternarOcultarSaldo('conta')">
@@ -536,6 +574,7 @@
     <div class="list-wrapper" id="historicoLista"></div>
   </div>
 
+  <!-- SEÇÃO MESAS PROPRIETÁRIAS -->
   <div id="secaoMesas" class="hidden">
     <div class="kpi-container">
       <div class="main-card" onclick="alternarOcultarSaldo('mesas')">
@@ -543,10 +582,58 @@
         <div class="value" id="saldoTotalMesas" style="color: var(--success);">R$ 0,00</div>
       </div>
     </div>
+
+    <!-- REGRAS DE REPASSE CENTRALIZADAS DA MIDE (ACCORDION SEGURO MOBILE) -->
+    <div class="repasse-accordion">
+      <button class="repasse-accordion-btn" onclick="toggleRepasseAccordion()">
+        <span>ℹ️ Regras de Repasse (Apenas Mide)</span>
+        <span id="accordionSeta">▼</span>
+      </button>
+      <div id="repasseAccordionContent" class="repasse-accordion-content hidden">
+        <p style="font-size:0.85rem; line-height:1.4; margin-bottom:8px;">
+          ⚠️ É necessário operar no mínimo <strong>5 pregões</strong> no ciclo atual da Mide para poder solicitar o saque.
+        </p>
+
+        <table class="repasse-tabela">
+          <thead>
+            <tr>
+              <th>Início do Ciclo</th>
+              <th>Período de Pagamento</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Entre os dias 30 e 09</td>
+              <td>Entre os dias 10 e 15</td>
+            </tr>
+            <tr>
+              <td>Entre os dias 10 e 19</td>
+              <td>Entre os dias 20 e 25</td>
+            </tr>
+            <tr>
+              <td>Entre os dias 20 e 29</td>
+              <td>Entre os dias 30 e 05</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="font-weight: 700; font-size:0.85rem; margin-top:12px; color: var(--primary)">Exemplos Operacionais Mide:</div>
+        <div class="exemplo-box">
+          <strong>Simulador Remunerado:</strong><br>
+          O trader deverá solicitar o repasse via sistema exatamente até a data de vencimento do ciclo. O pagamento correspondente cairá na janela subsequente da tabela acima.
+        </div>
+        <div class="exemplo-box" style="border-left-color: var(--success); background: rgba(16, 185, 129, 0.05)">
+          <strong>Conta Real:</strong><br>
+          A apuração é automática por parte deles. O repasse líquido será calculado e efetuado direto na conta bancária durante o respectivo período de pagamento.
+        </div>
+      </div>
+    </div>
+
     <div class="section-title">Minhas Avaliações / Planos</div>
     <div id="mesasContainer"></div>
   </div>
 
+  <!-- MODAL DE ESTRATÉGIAS -->
   <div id="stratModal" class="modal-overlay hidden" onclick="toggleModal(false)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -587,6 +674,7 @@
     </div>
   </div>
 
+  <!-- MODAL DE DETALHES DE CONTA (FOCADO E LIMPO) -->
   <div id="planoModal" class="modal-overlay hidden" onclick="togglePlanoModal(false)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -594,50 +682,12 @@
         <button onclick="togglePlanoModal(false)" style="padding: 4px 8px; border-radius: 6px;">✕</button>
       </div>
       <div class="modal-body">
-        <div class="strat-block" style="background: var(--card); border-color: var(--primary);">
-          <div class="strat-title" style="margin-bottom: 5px;">Dados de Acesso e Ciclo</div>
-          <div class="strat-rule" style="margin-bottom: 4px;">🖥️ <strong>Plataforma:</strong> <span id="detalhePlataforma" style="font-weight:normal; color:var(--text-main)">-</span></div>
-          <div class="strat-rule" style="margin-bottom: 4px;">🔑 <strong>Conta Profit:</strong> <span id="detalheConta" style="font-weight:normal; color:var(--text-main)">-</span></div>
-          <div class="strat-rule" style="margin-bottom: 4px;">💰 <strong>Valor do Plano:</strong> <span id="detalheValorPlano" style="font-weight:normal; color:var(--text-main)">-</span></div>
-          <div class="strat-rule" style="margin-bottom: 0;">📅 <strong>Ciclo Iniciado:</strong> <span id="detalheRepasse" style="font-weight:normal; color:var(--text-main)">-</span></div>
-        </div>
-
-        <div class="section-title" style="margin-top: 20px; font-size:0.95rem;">Como funciona o Repasse?</div>
-        <p style="font-size:0.85rem; line-height:1.4; margin-bottom:8px;">
-          ⚠️ É necessário operar no mínimo <strong>5 pregões</strong> no ciclo atual para poder solicitar o saque.
-        </p>
-
-        <table class="repasse-tabela">
-          <thead>
-            <tr>
-              <th>Início do Ciclo</th>
-              <th>Período de Pagamento</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Entre os dias 30 e 09</td>
-              <td>Entre os dias 10 e 15</td>
-            </tr>
-            <tr>
-              <td>Entre os dias 10 e 19</td>
-              <td>Entre os dias 20 e 25</td>
-            </tr>
-            <tr>
-              <td>Entre os dias 20 e 29</td>
-              <td>Entre os dias 30 e 05</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="section-title" style="margin-top: 15px; font-size:0.95rem;">Exemplos Práticos:</div>
-        <div class="exemplo-box">
-          <strong>Simulador Remunerado (Início em 29/05):</strong><br>
-          O trader deverá solicitar o repasse via sistema exatamente até o dia 29/06. O pagamento correspondente será efetuado na janela entre os dias 30 a 05 de Julho.
-        </div>
-        <div class="exemplo-box" style="border-left-color: var(--success); background: rgba(16, 185, 129, 0.05)">
-          <strong>Conta Real (Início em 29/05):</strong><br>
-          A apuração é automática. O repasse será calculated e efetuado diretamente entre os dias 30 a 05 de Julho.
+        <div class="strat-block" style="background: var(--card); border-color: var(--primary); margin-bottom: 0;">
+          <div class="strat-title" style="margin-bottom: 8px;">Dados de Acesso e Ciclo</div>
+          <div class="strat-rule" style="margin-bottom: 6px;">🖥️ <strong>Plataforma / Vencimento:</strong> <span id="detalhePlataforma" style="font-weight:normal; color:var(--text-main)">-</span></div>
+          <div class="strat-rule" style="margin-bottom: 6px;">🔑 <strong>Conta Profit:</strong> <span id="detalheConta" style="font-weight:normal; color:var(--text-main)">-</span></div>
+          <div class="strat-rule" style="margin-bottom: 6px;">💰 <strong>Custo do Plano:</strong> <span id="detalheValorPlano" style="font-weight:normal; color:var(--text-main)">-</span></div>
+          <div class="strat-rule" style="margin-bottom: 0;">📅 <strong>Início do Repasse:</strong> <span id="detalheRepasse" style="font-weight:normal; color:var(--text-main)">-</span></div>
         </div>
       </div>
     </div>
@@ -666,6 +716,19 @@
       const modal = document.getElementById('planoModal');
       if (abrir) modal.classList.remove('hidden');
       else modal.classList.add('hidden');
+    }
+
+    // Gerencia o Abre/Fecha do card de regras de repasse
+    function toggleRepasseAccordion() {
+      const content = document.getElementById('repasseAccordionContent');
+      const seta = document.getElementById('accordionSeta');
+      if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        seta.textContent = '▲';
+      } else {
+        content.classList.add('hidden');
+        seta.textContent = '▼';
+      }
     }
 
     function abrirDetalhesPlano(indexMesa) {
@@ -763,7 +826,6 @@
       const container = document.getElementById('mesasContainer');
       container.innerHTML = '';
       
-      // Mapeia e armazena o index original de cada mesa para o Modal funcionar direito
       let listasMesas = (dadosGlobais.mesas_proprietarias || []).map((mesa, index) => {
         return { ...mesa, originalIndex: index };
       });
@@ -773,18 +835,14 @@
         return;
       }
 
-      // LOGICA SOLICITADA: Ordena jogando status "Encerrado" para baixo
       listasMesas.sort((a, b) => {
         const prioridade = (status) => {
           status = (status || '').toLowerCase();
-      
           if (status.includes('ativ')) return 1;
           if (status.includes('avalia')) return 2;
           if (status.includes('encerrado')) return 3;
-      
           return 99;
         };
-      
         return prioridade(a.status) - prioridade(b.status);
       });
 
@@ -793,7 +851,6 @@
         const ehEncerrada = (mesaData.status || '').toLowerCase() === 'encerrado';
 
         if (ehEncerrada) {
-          // Exibe o novo campo customizado para contas que foram paradas
           const lucroEncerrada = mesaData.lucro_total_encerrada || 0;
           listaOperacoesHtml = `
             <div class="list-item" style="color: var(--text-muted); font-size: 0.9rem;">
@@ -824,7 +881,6 @@
         const acaoClique = temDetalhes ? `onclick="abrirDetalhesPlano(${mesaData.originalIndex})"` : '';
         const textoInformativo = temDetalhes ? ' 🔍' : '';
 
-        // Definindo classe de cor baseada no status
         let classeStatus = 'avaliacao';
         if (ehEncerrada) {
           classeStatus = 'encerrado';
@@ -930,9 +986,7 @@
       }
     }
 
-    // ==========================================
-    // LOGICA DO SLIDER EM DISPOSITIVOS MÓVEIS (SWIPE GESTURE)
-    // ==========================================
+    // SWIPE GESTURE DETECTOR
     let startX = 0;
     let startY = 0;
 
@@ -945,13 +999,10 @@
       let diffX = e.changedTouches[0].screenX - startX;
       let diffY = e.changedTouches[0].screenY - startY;
 
-      // Garante que o usuário quis arrastar pro lado e não pra baixo/cima
       if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 60) {
         if (diffX > 0 && abaAtual === 'mesas') {
-          // Deslizou para a Direita -> Vai para Conta Própria
           alternarAba('conta');
         } else if (diffX < 0 && abaAtual === 'conta') {
-          // Deslizou para a Esquerda -> Vai para Mesas Proprietárias
           alternarAba('mesas');
         }
       }
@@ -962,8 +1013,8 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('Service Worker registrado com sucesso!', reg))
-          .catch(err => console.error('Erro ao registrar Service Worker:', err));
+          .then(reg => console.log('Service Worker registrado!', reg))
+          .catch(err => console.error('Erro no Service Worker:', err));
       });
     }
   </script>
