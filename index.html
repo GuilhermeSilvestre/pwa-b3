@@ -442,6 +442,29 @@
       background: var(--card);
     }
 
+    /* Estilos do Dropdown de Encerrados */
+    .encerrados-accordion {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .encerrados-accordion-btn {
+      width: 100%;
+      background: var(--accent);
+      color: var(--text-muted);
+      border: none;
+      padding: 12px 16px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 14px;
+    }
+
     .repasse-tabela {
       width: 100%;
       border-collapse: collapse;
@@ -578,7 +601,7 @@
   <div id="secaoMesas" class="hidden">
     <div class="kpi-container">
       <div class="main-card" onclick="alternarOcultarSaldo('mesas')">
-        <div class="label">Total Bruto Mesas</div>
+        <div class="label">Total Líquido Mesas</div>
         <div class="value" id="saldoTotalMesas" style="color: var(--success);">R$ 0,00</div>
       </div>
     </div>
@@ -630,6 +653,15 @@
     </div>
 
     <div class="section-title">Minhas Avaliações / Planos</div>
+    
+    <!-- DROPDOWN PARA ESCONDER/EXIBIR CONTAS ENCERRADAS -->
+    <div class="encerrados-accordion">
+      <button class="encerrados-accordion-btn" onclick="toggleEncerradosDropdown()">
+        <span>📁 Contas Encerradas</span>
+        <span id="encerradosSeta">Mostrar ▼</span>
+      </button>
+    </div>
+
     <div id="mesasContainer"></div>
   </div>
 
@@ -637,7 +669,7 @@
   <div id="stratModal" class="modal-overlay hidden" onclick="toggleModal(false)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
-        <h2 style="font-size: 1.1rem; font-weight: 700;">Estratégias Operacionais</h2>
+        <h2 style="font-size: 1.1rem; font-weight: 700;">Estrategias Operacionais</h2>
         <button onclick="toggleModal(false)" style="padding: 4px 8px; border-radius: 6px;">✕</button>
       </div>
       <div class="modal-body">
@@ -686,6 +718,7 @@
           <div class="strat-title" style="margin-bottom: 8px;">Dados de Acesso e Ciclo</div>
           <div class="strat-rule" style="margin-bottom: 6px;">🖥️ <strong>Plataforma / Vencimento:</strong> <span id="detalhePlataforma" style="font-weight:normal; color:var(--text-main)">-</span></div>
           <div class="strat-rule" style="margin-bottom: 6px;">🔑 <strong>Conta Profit:</strong> <span id="detalheConta" style="font-weight:normal; color:var(--text-main)">-</span></div>
+          <div class="strat-rule" style="margin-bottom: 6px;">🆔 <strong>Código:</strong> <span id="detalheCodigo" style="font-weight:bold; color:var(--primary)">-</span></div>
           <div class="strat-rule" style="margin-bottom: 6px;">💰 <strong>Custo do Plano:</strong> <span id="detalheValorPlano" style="font-weight:normal; color:var(--text-main)">-</span></div>
           <div class="strat-rule" style="margin-bottom: 0;">📅 <strong>Início do Repasse:</strong> <span id="detalheRepasse" style="font-weight:normal; color:var(--text-main)">-</span></div>
         </div>
@@ -697,6 +730,7 @@
     let dadosGlobais = {};
     let anoAtual = ''; 
     let abaAtual = 'conta';
+    let mostrarEncerrados = false;
     
     let valoresOcultos = { conta: false, mesas: false };
     let valorRealConta = 0;
@@ -718,7 +752,6 @@
       else modal.classList.add('hidden');
     }
 
-    // Gerencia o Abre/Fecha do card de regras de repasse
     function toggleRepasseAccordion() {
       const content = document.getElementById('repasseAccordionContent');
       const seta = document.getElementById('accordionSeta');
@@ -731,6 +764,14 @@
       }
     }
 
+    // Gerencia a visibilidade das mesas encerradas pelo Dropdown
+    function toggleEncerradosDropdown() {
+      mostrarEncerrados = !mostrarEncerrados;
+      const seta = document.getElementById('encerradosSeta');
+      seta.textContent = mostrarEncerrados ? 'Ocultar ▲' : 'Mostrar ▼';
+      renderMesas();
+    }
+
     function abrirDetalhesPlano(indexMesa) {
       const planoData = dadosGlobais.mesas_proprietarias[indexMesa];
       if (!planoData || !planoData.detalhes) return;
@@ -738,6 +779,7 @@
       document.getElementById('planoModalTitulo').textContent = `${planoData.mesa} • ${planoData.plano}`;
       document.getElementById('detalhePlataforma').textContent = planoData.detalhes.plataforma_vencimento;
       document.getElementById('detalheConta').textContent = planoData.detalhes.conta_profit;
+      document.getElementById('detalheCodigo').textContent = planoData.detalhes.codigo || '-';
       document.getElementById('detalheValorPlano').textContent = formatarMoeda(planoData.detalhes.valor_plano || 0);
       document.getElementById('detalheRepasse').textContent = planoData.detalhes.repasse_inicio;
 
@@ -847,8 +889,14 @@
       });
 
       listasMesas.forEach((mesaData) => {
-        let listaOperacoesHtml = '';
         const ehEncerrada = (mesaData.status || '').toLowerCase() === 'encerrado';
+
+        // Regra do dropdown: se for encerrada e o filtro estiver falso, pula a renderização
+        if (ehEncerrada && !mostrarEncerrados) {
+          return;
+        }
+
+        let listaOperacoesHtml = '';
 
         if (ehEncerrada) {
           const lucroEncerrada = mesaData.lucro_total_encerrada || 0;
@@ -868,7 +916,7 @@
               <div class="list-item">
                 <div class="item-info">
                   <div class="mes">${op.mes}</div>
-                  <div class="sub">Valor Bruto • ${op.ano}</div>
+                  <div class="sub">Valor Líquido • ${op.ano}</div>
                 </div>
                 <div class="badge ${classeBadge}"><span>${sinal}</span> ${formatarMoeda(op.valor)}</div>
               </div>
