@@ -447,6 +447,7 @@
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 14px;
+      margin-top: 8px;
       margin-bottom: 16px;
       overflow: hidden;
     }
@@ -573,7 +574,6 @@
     <button class="nav-tab" id="tabMesas" onclick="alternarAba('mesas')">🏢 Mesas Proprietárias</button>
   </nav>
 
-  <!-- SEÇÃO CONTA PRÓPRIA -->
   <div id="secaoConta">
     <div class="kpi-container">
       <div class="main-card" onclick="alternarOcultarSaldo('conta')">
@@ -597,7 +597,6 @@
     <div class="list-wrapper" id="historicoLista"></div>
   </div>
 
-  <!-- SEÇÃO MESAS PROPRIETÁRIAS -->
   <div id="secaoMesas" class="hidden">
     <div class="kpi-container">
       <div class="main-card" onclick="alternarOcultarSaldo('mesas')">
@@ -606,7 +605,6 @@
       </div>
     </div>
 
-    <!-- REGRAS DE REPASSE CENTRALIZADAS DA MIDE (ACCORDION SEGURO MOBILE) -->
     <div class="repasse-accordion">
       <button class="repasse-accordion-btn" onclick="toggleRepasseAccordion()">
         <span>ℹ️ Regras de Repasse (Apenas Mide)</span>
@@ -654,22 +652,13 @@
 
     <div class="section-title">Minhas Avaliações / Planos</div>
     
-    <!-- DROPDOWN PARA ESCONDER/EXIBIR CONTAS ENCERRADAS -->
-    <div class="encerrados-accordion">
-      <button class="encerrados-accordion-btn" onclick="toggleEncerradosDropdown()">
-        <span>📁 Contas Encerradas</span>
-        <span id="encerradosSeta">Mostrar ▼</span>
-      </button>
-    </div>
-
     <div id="mesasContainer"></div>
   </div>
 
-  <!-- MODAL DE ESTRATÉGIAS -->
   <div id="stratModal" class="modal-overlay hidden" onclick="toggleModal(false)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
-        <h2 style="font-size: 1.1rem; font-weight: 700;">Estrategias Operacionais</h2>
+        <h2 style="font-size: 1.1rem; font-weight: 700;">Estratégias Operacionais</h2>
         <button onclick="toggleModal(false)" style="padding: 4px 8px; border-radius: 6px;">✕</button>
       </div>
       <div class="modal-body">
@@ -706,7 +695,6 @@
     </div>
   </div>
 
-  <!-- MODAL DE DETALHES DE CONTA (FOCADO E LIMPO) -->
   <div id="planoModal" class="modal-overlay hidden" onclick="togglePlanoModal(false)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -764,11 +752,12 @@
       }
     }
 
-    // Gerencia a visibilidade das mesas encerradas pelo Dropdown
     function toggleEncerradosDropdown() {
       mostrarEncerrados = !mostrarEncerrados;
       const seta = document.getElementById('encerradosSeta');
-      seta.textContent = mostrarEncerrados ? 'Ocultar ▲' : 'Mostrar ▼';
+      if (seta) {
+        seta.textContent = mostrarEncerrados ? 'Ocultar ▲' : 'Mostrar ▼';
+      }
       renderMesas();
     }
 
@@ -877,84 +866,108 @@
         return;
       }
 
-      listasMesas.sort((a, b) => {
+      // Separação lógica entre ativas e encerradas
+      let mesasAtivas = listasMesas.filter(m => (m.status || '').toLowerCase() !== 'encerrado');
+      let mesasEncerradas = listasMesas.filter(m => (m.status || '').toLowerCase() === 'encerrado');
+
+      // Ordena ativas colocando Conta Real no topo
+      mesasAtivas.sort((a, b) => {
         const prioridade = (status) => {
           status = (status || '').toLowerCase();
           if (status.includes('ativ')) return 1;
           if (status.includes('avalia')) return 2;
-          if (status.includes('encerrado')) return 3;
           return 99;
         };
         return prioridade(a.status) - prioridade(b.status);
       });
 
-      listasMesas.forEach((mesaData) => {
-        const ehEncerrada = (mesaData.status || '').toLowerCase() === 'encerrado';
+      // 1. Renderiza primeiro as contas ATIVAS
+      mesasAtivas.forEach((mesaData) => {
+        container.innerHTML += construirMesaCardHtml(mesaData);
+      });
 
-        // Regra do dropdown: se for encerrada e o filtro estiver falso, pula a renderização
-        if (ehEncerrada && !mostrarEncerrados) {
-          return;
-        }
-
-        let listaOperacoesHtml = '';
-
-        if (ehEncerrada) {
-          const lucroEncerrada = mesaData.lucro_total_encerrada || 0;
-          listaOperacoesHtml = `
-            <div class="list-item" style="color: var(--text-muted); font-size: 0.9rem;">
-              <div>Fim do ciclo da conta.</div>
-              <div>Lucro Total: <strong>${formatarMoeda(lucroEncerrada)}</strong></div>
-            </div>`;
-        } else if (!mesaData.operacoes || mesaData.operacoes.length === 0) {
-          listaOperacoesHtml = `<div class="list-item" style="color: var(--text-muted); font-style: italic; font-size: 0.9rem;">Sem operações registradas ainda.</div>`;
-        } else {
-          mesaData.operacoes.forEach(op => {
-            const ehPositivo = op.valor >= 0;
-            const sinal = ehPositivo ? '▲ ' : '▼ ';
-            const classeBadge = ehPositivo ? 'positivo' : 'negativo';
-            listaOperacoesHtml += `
-              <div class="list-item">
-                <div class="item-info">
-                  <div class="mes">${op.mes}</div>
-                  <div class="sub">Valor Líquido • ${op.ano}</div>
-                </div>
-                <div class="badge ${classeBadge}"><span>${sinal}</span> ${formatarMoeda(op.valor)}</div>
-              </div>
-            `;
-          });
-        }
-
-        const temDetalhes = mesaData.detalhes ? true : false;
-        const classeClicavel = temDetalhes ? 'clicavel' : '';
-        const acaoClique = temDetalhes ? `onclick="abrirDetalhesPlano(${mesaData.originalIndex})"` : '';
-        const textoInformativo = temDetalhes ? ' 🔍' : '';
-
-        let classeStatus = 'avaliacao';
-        if (ehEncerrada) {
-          classeStatus = 'encerrado';
-        } else if (mesaData.status && mesaData.status.toLowerCase().includes('real')) {
-          classeStatus = 'ativo';
-        }
-
-        const statusHtml = mesaData.status ? `<span class="status-badge ${classeStatus}">${mesaData.status}</span>` : '';
-        const contratosHtml = mesaData.qtd_contratos ? `<div>Contratos: <strong>${mesaData.qtd_contratos}</strong></div>` : '';
-        const drawdownHtml = mesaData.daily_drawdown ? `<div>Daily Drawdown: <strong style="color:var(--danger)">${formatarMoeda(mesaData.daily_drawdown)}</strong></div>` : '';
-        const wrapperClasseExtra = ehEncerrada ? 'encerrada-wrapper' : '';
-
+      // 2. Insere o botão de Dropdown Dinâmico LOGO ABAIXO das contas ativas
+      if (mesasEncerradas.length > 0) {
+        const textoSeta = mostrarEncerrados ? 'Ocultar ▲' : 'Mostrar ▼';
         container.innerHTML += `
-          <div class="list-wrapper ${classeClicavel} ${wrapperClasseExtra}">
-            <div class="mesa-header" ${acaoClique}>
-              <div>Mesa: ${mesaData.mesa}${textoInformativo}</div>
-              <div class="plano-info">Plano: ${mesaData.plano} <br> ${statusHtml}</div>
-            </div>
-            <div class="mesa-meta-info">
-              ${contratosHtml}
-              ${drawdownHtml}
-            </div>
-            ${listaOperacoesHtml}
+          <div class="encerrados-accordion">
+            <button class="encerrados-accordion-btn" onclick="toggleEncerradosDropdown()">
+              <span>📁 Contas Encerradas (${mesasEncerradas.length})</span>
+              <span id="encerradosSeta">${textoSeta}</span>
+            </button>
           </div>
         `;
-      });
+
+        // 3. Renderiza as contas ENCERRADAS apenas se o dropdown estiver aberto
+        if (mostrarEncerrados) {
+          mesasEncerradas.forEach((mesaData) => {
+            container.innerHTML += construirMesaCardHtml(mesaData);
+          });
+        }
+      }
+    }
+
+    // Função auxiliar para evitar duplicação na renderização do card de mesas
+    function construirMesaCardHtml(mesaData) {
+      const ehEncerrada = (mesaData.status || '').toLowerCase() === 'encerrado';
+      let listaOperacoesHtml = '';
+
+      if (ehEncerrada) {
+        const lucroEncerrada = mesaData.lucro_total_encerrada || 0;
+        listaOperacoesHtml = `
+          <div class="list-item" style="color: var(--text-muted); font-size: 0.9rem;">
+            <div>Fim do ciclo da conta.</div>
+            <div>Lucro Total: <strong>${formatarMoeda(lucroEncerrada)}</strong></div>
+          </div>`;
+      } else if (!mesaData.operacoes || mesaData.operacoes.length === 0) {
+        listaOperacoesHtml = `<div class="list-item" style="color: var(--text-muted); font-style: italic; font-size: 0.9rem;">Sem operações registradas ainda.</div>`;
+      } else {
+        mesaData.operacoes.forEach(op => {
+          const ehPositivo = op.valor >= 0;
+          const sinal = ehPositivo ? '▲ ' : '▼ ';
+          const classeBadge = ehPositivo ? 'positivo' : 'negativo';
+          listaOperacoesHtml += `
+            <div class="list-item">
+              <div class="item-info">
+                <div class="mes">${op.mes}</div>
+                <div class="sub">Valor Líquido • ${op.ano}</div>
+              </div>
+              <div class="badge ${classeBadge}"><span>${sinal}</span> ${formatarMoeda(op.valor)}</div>
+            </div>
+          `;
+        });
+      }
+
+      const temDetalhes = mesaData.detalhes ? true : false;
+      const classeClicavel = temDetalhes ? 'clicavel' : '';
+      const acaoClique = temDetalhes ? `onclick="abrirDetalhesPlano(${mesaData.originalIndex})"` : '';
+      const textoInformativo = temDetalhes ? ' 🔍' : '';
+
+      let classeStatus = 'avaliacao';
+      if (ehEncerrada) {
+        classeStatus = 'encerrado';
+      } else if (mesaData.status && mesaData.status.toLowerCase().includes('real')) {
+        classeStatus = 'ativo';
+      }
+
+      const statusHtml = mesaData.status ? `<span class="status-badge ${classeStatus}">${mesaData.status}</span>` : '';
+      const contratosHtml = mesaData.qtd_contratos ? `<div>Contratos: <strong>${mesaData.qtd_contratos}</strong></div>` : '';
+      const drawdownHtml = mesaData.daily_drawdown ? `<div>Daily Drawdown: <strong style="color:var(--danger)">${formatarMoeda(mesaData.daily_drawdown)}</strong></div>` : '';
+      const wrapperClasseExtra = ehEncerrada ? 'encerrada-wrapper' : '';
+
+      return `
+        <div class="list-wrapper ${classeClicavel} ${wrapperClasseExtra}">
+          <div class="mesa-header" ${acaoClique}>
+            <div>Mesa: ${mesaData.mesa}${textoInformativo}</div>
+            <div class="plano-info">Plano: ${mesaData.plano} <br> ${statusHtml}</div>
+          </div>
+          <div class="mesa-meta-info">
+            ${contratosHtml}
+            ${drawdownHtml}
+          </div>
+          ${listaOperacoesHtml}
+        </div>
+      `;
     }
 
     function calcularMetricasGerais() {
