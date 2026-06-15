@@ -36,6 +36,7 @@
         "valor_plano": 220.00,
         "plataforma_vencimento": "Vence dia 23",
         "conta_profit": "103084217",
+        "codigo": "I6W60F",
         "repasse_inicio": "29/05"
       },
       "operacoes": [
@@ -52,20 +53,37 @@
         "valor_plano": 230.00,
         "plataforma_vencimento": "Vence dia 9",
         "conta_profit": "103155299",
+        "codigo": "SCUIVJ",
         "repasse_inicio": "-"
       },
       "operacoes": []
     },
     {
       "mesa": "Mide",
-      "plano": "Exame Conservador",
-      "status": "Encerrado",
+      "plano": "Exame Conservador 100%",
+      "status": "Avaliação Fase 1",
       "qtd_contratos": 10,
       "daily_drawdown": 525.00,
+      "detalhes": {
+        "valor_plano": 115.00,
+        "plataforma_vencimento": "-",
+        "conta_profit": "-",
+        "codigo": "RVXS8S",
+        "repasse_inicio": "-"
+      },
+      "operacoes": []
+    },
+    {
+      "mesa": "Mide",
+      "plano": "Exame Arrojado",
+      "status": "Encerrado",
+      "qtd_contratos": 20,
+      "daily_drawdown": 825.00,
       "detalhes": {
         "valor_plano": 180.00,
         "plataforma_vencimento": "-",
         "conta_profit": "-",
+        "codigo": "1K0BR0",
         "repasse_inicio": "-"
       },
       "operacoes": []
@@ -81,6 +99,7 @@
         "valor_plano": 280.00,
         "plataforma_vencimento": "-",
         "conta_profit": "-",
+        "codigo": "-",
         "repasse_inicio": "-"
       },
       "operacoes": []
