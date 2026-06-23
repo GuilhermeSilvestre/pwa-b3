@@ -398,7 +398,7 @@
 
       const statusHtml = mesaData.status ? `<span class="status-badge ${classeStatus}">${mesaData.status}</span>` : '';
       const contratosHtml = mesaData.qtd_contratos ? `<div>Contratos: <strong>${mesaData.qtd_contratos}</strong></div>` : '';
-      const drawdownHtml = mesaData.daily_drawdown ? `<div>Daily Drawdown: <strong style="color:var(--danger)">${formatarMoeda(mesaData.daily_drawdown)}</strong></div>` : '';
+      const drawdownHtml = mesaData.daily_drawdown ? `<div>Daily Drawdown: <strong>${formatarMoeda(mesaData.daily_drawdown)}</strong></div>` : '';
       const wrapperClasseExtra = ehEncerrada ? 'encerrada-wrapper' : '';
 
       return `
