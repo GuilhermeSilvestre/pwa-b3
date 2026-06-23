@@ -160,6 +160,7 @@
           <div class="strat-rule" style="margin-bottom: 6px;">🔑 <strong>Conta Profit:</strong> <span id="detalheConta" style="font-weight:normal; color:var(--text-main)">-</span></div>
           <div class="strat-rule" style="margin-bottom: 6px;">🆔 <strong>Código:</strong> <span id="detalheCodigo" style="font-weight:bold; color:var(--primary)">-</span></div>
           <div class="strat-rule" style="margin-bottom: 6px;">💰 <strong>Custo do Plano:</strong> <span id="detalheValorPlano" style="font-weight:normal; color:var(--text-main)">-</span></div>
+          <div class="strat-rule" style="margin-bottom: 6px;">🛡️ <strong>Margem:</strong> <span id="detalheMargem" style="font-weight:normal; color:var(--text-main)">-</span></div>
           <div class="strat-rule" style="margin-bottom: 0;">📅 <strong>Início do Repasse:</strong> <span id="detalheRepasse" style="font-weight:normal; color:var(--text-main)">-</span></div>
         </div>
       </div>
@@ -222,7 +223,10 @@
       document.getElementById('detalheConta').textContent = planoData.detalhes.conta_profit;
       document.getElementById('detalheCodigo').textContent = planoData.detalhes.codigo || '-';
       document.getElementById('detalheValorPlano').textContent = formatarMoeda(planoData.detalhes.valor_plano || 0);
+      const margemValor = planoData.detalhes.margem;
+      document.getElementById('detalheMargem').textContent = margemValor ? (margemValor.includes('R$') ? margemValor : `R$ ${margemValor}`) : '-';
       document.getElementById('detalheRepasse').textContent = planoData.detalhes.repasse_inicio;
+      
 
       togglePlanoModal(true);
     }
