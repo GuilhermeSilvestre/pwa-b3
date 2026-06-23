@@ -37,7 +37,8 @@
         "plataforma_vencimento": "Vence dia 23",
         "conta_profit": "103084217",
         "codigo": "I6W60F",
-        "repasse_inicio": "29/05"
+        "repasse_inicio": "29/05",
+        "margem": "3.300,00"
       },
       "operacoes": [
         { "mes": "Junho", "ano": "2026", "valor": 460.00 }
@@ -54,7 +55,8 @@
         "plataforma_vencimento": "Vence dia 9",
         "conta_profit": "103155299",
         "codigo": "SCUIVJ",
-        "repasse_inicio": "-"
+        "repasse_inicio": "-",
+        "margem": "2.100,00"
       },
       "operacoes": []
     },
@@ -69,7 +71,8 @@
         "plataforma_vencimento": "-",
         "conta_profit": "-",
         "codigo": "RVXS8S",
-        "repasse_inicio": "-"
+        "repasse_inicio": "-",
+        "margem": "2.100,00"
       },
       "operacoes": []
     },
@@ -84,7 +87,8 @@
         "plataforma_vencimento": "-",
         "conta_profit": "-",
         "codigo": "1K0BR0",
-        "repasse_inicio": "-"
+        "repasse_inicio": "-",
+        "margem": "3.300,00"
       },
       "operacoes": []
     },
@@ -100,7 +104,8 @@
         "plataforma_vencimento": "-",
         "conta_profit": "-",
         "codigo": "-",
-        "repasse_inicio": "-"
+        "repasse_inicio": "-",
+        "margem": "1.350,00"
       },
       "operacoes": []
     }
