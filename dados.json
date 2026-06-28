@@ -22,7 +22,8 @@
       { "mes": "Dezembro", "valor": 175.59 }
     ],
     "2026": [
-      { "mes": "Janeiro", "valor": 50.87 }
+      { "mes": "Janeiro", "valor": 50.87 },
+      { "mes": "Junho", "valor": 230.00 }
     ]
   },
   "mesas_proprietarias": [
