@@ -488,6 +488,12 @@
         const response = await fetch('./dados.json?v=' + Date.now());
         if (!response.ok) throw new Error('Erro ao carregar o arquivo JSON.');
         dadosGlobais = await response.json();
+
+        if (dadosGlobais.conta_propria && dadosGlobais.conta_propria.visible === false) {
+              document.getElementById('tabConta').style.display = 'none';
+              alternarAba('mesas');
+            }
+        
         calcularMetricasGerais();
         gerarBotoesDeAno(); 
         renderConta();
