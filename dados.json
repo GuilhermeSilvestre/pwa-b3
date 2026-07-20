@@ -1,6 +1,6 @@
 {
   "conta_propria": {
-    "visible": false,
+    "visible": true,
     "2021": [
       { "mes": "Julho", "valor": -84.20 },
       { "mes": "Setembro", "valor": -52.10 }
@@ -24,7 +24,8 @@
     ],
     "2026": [
       { "mes": "Janeiro", "valor": 50.87 },
-      { "mes": "Junho", "valor": 230.00 }
+      { "mes": "Junho", "valor": 230.00 },
+      { "mes": "Julho", "valor": -123.71 }
     ]
   },
   "mesas_proprietarias": {
