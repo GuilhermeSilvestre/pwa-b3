@@ -27,89 +27,92 @@
       { "mes": "Junho", "valor": 230.00 }
     ]
   },
-  "mesas_proprietarias": [
-    {
-      "mesa": "Mide",
-      "plano": "Exame Arrojado",
-      "status": "Ativo Conta Real",
-      "qtd_contratos": 20,
-      "daily_drawdown": 825.00,
-      "detalhes": {
-        "valor_plano": 220.00,
-        "plataforma_vencimento": "Vence dia 23",
-        "conta_profit": "103084217  - Conta 12",
-        "codigo": "I6W60F",
-        "repasse_inicio": "29/05",
-        "margem": "3.300,00"
+  "mesas_proprietarias": {
+    "visible": true,
+    "dados": [
+      {
+        "mesa": "Mide",
+        "plano": "Exame Arrojado",
+        "status": "Ativo Conta Real",
+        "qtd_contratos": 20,
+        "daily_drawdown": 825.00,
+        "detalhes": {
+          "valor_plano": 220.00,
+          "plataforma_vencimento": "Vence dia 23",
+          "conta_profit": "103084217  - Conta 12",
+          "codigo": "I6W60F",
+          "repasse_inicio": "29/05",
+          "margem": "3.300,00"
+        },
+        "operacoes": [
+          { "mes": "Junho", "ano": "2026", "valor": 807.00 }
+        ]
       },
-      "operacoes": [
-        { "mes": "Junho", "ano": "2026", "valor": 807.00 }
-      ]
-    },
-    {
-      "mesa": "Mide",
-      "plano": "Exame Conservador",
-      "status": "Encerrado",
-      "qtd_contratos": 10,
-      "daily_drawdown": 525.00,
-      "detalhes": {
-        "valor_plano": 230.00,
-        "plataforma_vencimento": "Vence dia 9",
-        "conta_profit": "103155299",
-        "codigo": "SCUIVJ",
-        "repasse_inicio": "-",
-        "margem": "2.100,00"
+      {
+        "mesa": "Mide",
+        "plano": "Exame Conservador",
+        "status": "Encerrado",
+        "qtd_contratos": 10,
+        "daily_drawdown": 525.00,
+        "detalhes": {
+          "valor_plano": 230.00,
+          "plataforma_vencimento": "Vence dia 9",
+          "conta_profit": "103155299",
+          "codigo": "SCUIVJ",
+          "repasse_inicio": "-",
+          "margem": "2.100,00"
+        },
+        "operacoes": []
       },
-      "operacoes": []
-    },
-    {
-      "mesa": "Mide",
-      "plano": "Exame Conservador 100%",
-      "status": "Avaliação Fase 1",
-      "qtd_contratos": 10,
-      "daily_drawdown": 525.00,
-      "detalhes": {
-        "valor_plano": 115.00,
-        "plataforma_vencimento": "Vence dia 1",
-        "conta_profit": "70606897 - Conta 23",
-        "codigo": "RVXS8S",
-        "repasse_inicio": "-",
-        "margem": "2.100,00"
+      {
+        "mesa": "Mide",
+        "plano": "Exame Conservador 100%",
+        "status": "Avaliação Fase 1",
+        "qtd_contratos": 10,
+        "daily_drawdown": 525.00,
+        "detalhes": {
+          "valor_plano": 115.00,
+          "plataforma_vencimento": "Vence dia 1",
+          "conta_profit": "70606897 - Conta 23",
+          "codigo": "RVXS8S",
+          "repasse_inicio": "-",
+          "margem": "2.100,00"
+        },
+        "operacoes": []
       },
-      "operacoes": []
-    },
-    {
-      "mesa": "Mide",
-      "plano": "Exame Arrojado",
-      "status": "Encerrado",
-      "qtd_contratos": 20,
-      "daily_drawdown": 825.00,
-      "detalhes": {
-        "valor_plano": 180.00,
-        "plataforma_vencimento": "-",
-        "conta_profit": "-",
-        "codigo": "1K0BR0",
-        "repasse_inicio": "-",
-        "margem": "3.300,00"
+      {
+        "mesa": "Mide",
+        "plano": "Exame Arrojado",
+        "status": "Encerrado",
+        "qtd_contratos": 20,
+        "daily_drawdown": 825.00,
+        "detalhes": {
+          "valor_plano": 180.00,
+          "plataforma_vencimento": "-",
+          "conta_profit": "-",
+          "codigo": "1K0BR0",
+          "repasse_inicio": "-",
+          "margem": "3.300,00"
+        },
+        "operacoes": []
       },
-      "operacoes": []
-    },
-    {
-      "mesa": "Euroinvest",
-      "plano": "Europass 5",
-      "status": "Encerrado",
-      "qtd_contratos": 5,
-      "daily_drawdown": 375.00,
-      "lucro_total_encerrada": 0.0,
-      "detalhes": {
-        "valor_plano": 280.00,
-        "plataforma_vencimento": "-",
-        "conta_profit": "-",
-        "codigo": "-",
-        "repasse_inicio": "-",
-        "margem": "1.350,00"
-      },
-      "operacoes": []
-    }
-  ]
+      {
+        "mesa": "Euroinvest",
+        "plano": "Europass 5",
+        "status": "Encerrado",
+        "qtd_contratos": 5,
+        "daily_drawdown": 375.00,
+        "lucro_total_encerrada": 0.0,
+        "detalhes": {
+          "valor_plano": 280.00,
+          "plataforma_vencimento": "-",
+          "conta_profit": "-",
+          "codigo": "-",
+          "repasse_inicio": "-",
+          "margem": "1.350,00"
+        },
+        "operacoes": []
+      }
+    ]
+  }
 }
