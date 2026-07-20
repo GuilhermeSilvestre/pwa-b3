@@ -167,7 +167,7 @@
     </div>
   </div>
 
-  <script>
+<script>
     let dadosGlobais = {};
     let anoAtual = ''; 
     let abaAtual = 'conta';
@@ -215,7 +215,9 @@
     }
 
     function abrirDetalhesPlano(indexMesa) {
-      const planoData = dadosGlobais.mesas_proprietarias[indexMesa];
+      // AJUSTE: Acessa a lista de dentro de .dados
+      const listaOrigem = dadosGlobais.mesas_proprietarias ? (dadosGlobais.mesas_proprietarias.dados || []) : [];
+      const planoData = listaOrigem[indexMesa];
       if (!planoData || !planoData.detalhes) return;
 
       document.getElementById('planoModalTitulo').textContent = `${planoData.mesa} • ${planoData.plano}`;
@@ -227,7 +229,6 @@
       document.getElementById('detalheMargem').textContent = margemValor ? (margemValor.includes('R$') ? margemValor : `R$ ${margemValor}`) : '-';
       document.getElementById('detalheRepasse').textContent = planoData.detalhes.repasse_inicio;
       
-
       togglePlanoModal(true);
     }
 
@@ -270,7 +271,11 @@
       const container = document.getElementById('anosFiltroContainer');
       container.innerHTML = '';
       const dadosConta = dadosGlobais.conta_propria || {};
-      const anosDisponiveis = Object.keys(dadosConta).sort(); 
+      
+      // AJUSTE: Ignora a propriedade "visible" ao buscar os anos
+      const anosDisponiveis = Object.keys(dadosConta)
+        .filter(key => key !== 'visible')
+        .sort(); 
 
       if (!anoAtual && anosDisponiveis.length > 0) {
         anoAtual = anosDisponiveis[anosDisponiveis.length - 1];
@@ -313,7 +318,10 @@
       const container = document.getElementById('mesasContainer');
       container.innerHTML = '';
       
-      let listasMesas = (dadosGlobais.mesas_proprietarias || []).map((mesa, index) => {
+      // AJUSTE: Lê o array correto de dentro de mesas_proprietarias.dados
+      const listaOrigem = dadosGlobais.mesas_proprietarias ? (dadosGlobais.mesas_proprietarias.dados || []) : [];
+      
+      let listasMesas = listaOrigem.map((mesa, index) => {
         return { ...mesa, originalIndex: index };
       });
 
@@ -426,12 +434,15 @@
       let mesesPositivos = 0;
       const dadosConta = dadosGlobais.conta_propria || {};
 
+      // AJUSTE: Ignora o campo "visible" no loop da conta própria
       Object.keys(dadosConta).forEach(ano => {
-        dadosConta[ano].forEach(item => {
-          totalAcumulado += item.valor;
-          qtdMeses++;
-          if (item.valor > 0) mesesPositivos++;
-        });
+        if (ano !== 'visible' && Array.isArray(dadosConta[ano])) {
+          dadosConta[ano].forEach(item => {
+            totalAcumulado += item.valor;
+            qtdMeses++;
+            if (item.valor > 0) mesesPositivos++;
+          });
+        }
       });
 
       const media = qtdMeses > 0 ? (totalAcumulado / qtdMeses) : 0;
@@ -447,7 +458,8 @@
       document.getElementById('taxaAcerto').textContent = `${pctAcertos}% (${mesesPositivos}/${qtdMeses} M)`;
 
       let totalMesas = 0;
-      const listasMesas = dadosGlobais.mesas_proprietarias || [];
+      // AJUSTE: Correção crítica para ler de dentro do nó mesas_proprietarias.dados
+      const listasMesas = dadosGlobais.mesas_proprietarias ? (dadosGlobais.mesas_proprietarias.dados || []) : [];
       listasMesas.forEach(mesaData => {
         if (mesaData.operacoes) {
           mesaData.operacoes.forEach(op => { totalMesas += op.valor; });
@@ -489,10 +501,17 @@
         if (!response.ok) throw new Error('Erro ao carregar o arquivo JSON.');
         dadosGlobais = await response.json();
 
+        // AJUSTE: Oculta a aba Conta Própria se visible for false
         if (dadosGlobais.conta_propria && dadosGlobais.conta_propria.visible === false) {
-              document.getElementById('tabConta').style.display = 'none';
-              alternarAba('mesas');
-            }
+          document.getElementById('tabConta').style.display = 'none';
+          alternarAba('mesas');
+        }
+        
+        // AJUSTE: Oculta a aba Mesas se visible for false
+        if (dadosGlobais.mesas_proprietarias && dadosGlobais.mesas_proprietarias.visible === false) {
+          document.getElementById('tabMesas').style.display = 'none';
+          alternarAba('conta');
+        }
         
         calcularMetricasGerais();
         gerarBotoesDeAno(); 
@@ -517,9 +536,15 @@
 
       if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 60) {
         if (diffX > 0 && abaAtual === 'mesas') {
-          alternarAba('conta');
+          // Só permite arrastar se a aba destino estiver visível
+          if (!dadosGlobais.conta_propria || dadosGlobais.conta_propria.visible !== false) {
+            alternarAba('conta');
+          }
         } else if (diffX < 0 && abaAtual === 'conta') {
-          alternarAba('mesas');
+          // Só permite arrastar se a aba destino estiver visível
+          if (!dadosGlobais.mesas_proprietarias || dadosGlobais.mesas_proprietarias.visible !== false) {
+            alternarAba('mesas');
+          }
         }
       }
     }, { passive: true });
@@ -534,5 +559,6 @@
       });
     }
   </script>
+  
 </body>
 </html>
