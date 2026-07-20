@@ -1,5 +1,6 @@
 {
   "conta_propria": {
+    "visible": false,
     "2021": [
       { "mes": "Julho", "valor": -84.20 },
       { "mes": "Setembro", "valor": -52.10 }
