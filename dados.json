@@ -51,22 +51,6 @@
       },
       {
         "mesa": "Mide",
-        "plano": "Exame Conservador",
-        "status": "Encerrado",
-        "qtd_contratos": 10,
-        "daily_drawdown": 525.00,
-        "detalhes": {
-          "valor_plano": 230.00,
-          "plataforma_vencimento": "Vence dia 9",
-          "conta_profit": "103155299",
-          "codigo": "SCUIVJ",
-          "repasse_inicio": "-",
-          "margem": "2.100,00"
-        },
-        "operacoes": []
-      },
-      {
-        "mesa": "Mide",
         "plano": "Exame Conservador 100%",
         "status": "Avaliação Fase 1",
         "qtd_contratos": 10,
@@ -102,9 +86,9 @@
         "plano": "Exame Arrojado",
         "status": "Agendado",
         "qtd_contratos": 20,
-        "daily_drawdown": 1550.00,
+        "daily_drawdown": 825.00,
         "detalhes": {
-          "valor_plano": 825.00,
+          "valor_plano": 190.00,
           "plataforma_vencimento": "Vence dia x",
           "conta_profit": "xxxx - Conta xx",
           "codigo": "CQ5WRC",
@@ -118,14 +102,30 @@
         "plano": "Exame Arrojado",
         "status": "Agendado",
         "qtd_contratos": 20,
-        "daily_drawdown": 1550.00,
+        "daily_drawdown": 825.00,
         "detalhes": {
-          "valor_plano": 825.00,
+          "valor_plano": 190.00,
           "plataforma_vencimento": "Vence dia x",
           "conta_profit": "xxxx - Conta xx",
           "codigo": "HKKN6J",
           "repasse_inicio": "-",
           "margem": "3.300,00"
+        },
+        "operacoes": []
+      },
+      {
+        "mesa": "Mide",
+        "plano": "Exame Conservador",
+        "status": "Encerrado",
+        "qtd_contratos": 10,
+        "daily_drawdown": 525.00,
+        "detalhes": {
+          "valor_plano": 230.00,
+          "plataforma_vencimento": "Vence dia 9",
+          "conta_profit": "103155299",
+          "codigo": "SCUIVJ",
+          "repasse_inicio": "-",
+          "margem": "2.100,00"
         },
         "operacoes": []
       },
