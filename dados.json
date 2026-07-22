@@ -83,6 +83,54 @@
       },
       {
         "mesa": "Mide",
+        "plano": "Exame Agressivo 100%",
+        "status": "Agendado",
+        "qtd_contratos": 30,
+        "daily_drawdown": 1550.00,
+        "detalhes": {
+          "valor_plano": 600.00,
+          "plataforma_vencimento": "Vence dia x",
+          "conta_profit": "xxxx - Conta xx",
+          "codigo": "3VTURV",
+          "repasse_inicio": "-",
+          "margem": "6.200,00"
+        },
+        "operacoes": []
+      },
+      {
+        "mesa": "Mide",
+        "plano": "Exame Arrojado",
+        "status": "Agendado",
+        "qtd_contratos": 20,
+        "daily_drawdown": 1550.00,
+        "detalhes": {
+          "valor_plano": 825.00,
+          "plataforma_vencimento": "Vence dia x",
+          "conta_profit": "xxxx - Conta xx",
+          "codigo": "CQ5WRC",
+          "repasse_inicio": "-",
+          "margem": "3.300,00"
+        },
+        "operacoes": []
+      },
+      {
+        "mesa": "Mide",
+        "plano": "Exame Arrojado",
+        "status": "Agendado",
+        "qtd_contratos": 20,
+        "daily_drawdown": 1550.00,
+        "detalhes": {
+          "valor_plano": 825.00,
+          "plataforma_vencimento": "Vence dia x",
+          "conta_profit": "xxxx - Conta xx",
+          "codigo": "HKKN6J",
+          "repasse_inicio": "-",
+          "margem": "3.300,00"
+        },
+        "operacoes": []
+      },
+      {
+        "mesa": "Mide",
         "plano": "Exame Arrojado",
         "status": "Encerrado",
         "qtd_contratos": 20,
