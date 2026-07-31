@@ -46,7 +46,8 @@
           "margem": "3.300,00"
         },
         "operacoes": [
-          { "mes": "Junho", "ano": "2026", "valor": 807.00 }
+          { "mes": "Junho", "ano": "2026", "valor": 807.81 },
+          { "mes": "Julho", "valor": 847.08 }
         ]
       },
       {
