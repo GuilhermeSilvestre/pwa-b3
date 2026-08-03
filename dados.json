@@ -53,7 +53,7 @@
       {
         "mesa": "Mide",
         "plano": "Exame Conservador 100%",
-        "status": "Avaliação Fase 1",
+        "status": "Avaliação Fase 2",
         "qtd_contratos": 10,
         "daily_drawdown": 525.00,
         "detalhes": {
@@ -69,12 +69,12 @@
       {
         "mesa": "Mide",
         "plano": "Exame Agressivo 100%",
-        "status": "Agendado",
+        "status": "Avaliação Fase 1",
         "qtd_contratos": 30,
         "daily_drawdown": 1550.00,
         "detalhes": {
           "valor_plano": 600.00,
-          "plataforma_vencimento": "Vence dia x",
+          "plataforma_vencimento": "Vence dia 4",
           "conta_profit": "xxxx - Conta xx",
           "codigo": "3VTURV",
           "repasse_inicio": "-",
