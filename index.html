@@ -262,7 +262,7 @@
       if (modoSaldoComDesconto) {
         elLabel.textContent = "Lucro - Custo de Planos";
         elDetalhe.style.display = 'block';
-        elDetalhe.innerHTML = `Ganhos Operacionais: <strong>${formatarMoeda(valorLiquidoMesas)}</strong> <br> Custos com Planos: <strong style="color:var(--danger)">-${formatarMoeda(totalCustosPlanos)}</strong>`;
+        elDetalhe.innerHTML = `Ganhos Operacionais: <strong style="color:var(--success)">${formatarMoeda(valorLiquidoMesas)}</strong> <br> Custos com Planos: <strong style="color:var(--danger)">-${formatarMoeda(totalCustosPlanos)}</strong>`;
       } else {
         elLabel.textContent = "Total Líquido Mesas";
         elDetalhe.style.display = 'none';
