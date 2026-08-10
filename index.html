@@ -24,6 +24,7 @@
   <nav class="main-nav">
     <button class="nav-tab active" id="tabConta" onclick="alternarAba('conta')">📈 Conta Própria</button>
     <button class="nav-tab" id="tabMesas" onclick="alternarAba('mesas')">🏢 Mesas Proprietárias</button>
+    <button class="nav-tab" id="tabVencimentos" onclick="alternarAba('vencimentos')">📅 Vencimentos</button>
   </nav>
 
   <div id="secaoConta">
@@ -51,9 +52,10 @@
 
   <div id="secaoMesas" class="hidden">
     <div class="kpi-container">
-      <div class="main-card" onclick="alternarOcultarSaldo('mesas')">
-        <div class="label">Total Líquido Mesas</div>
+      <div class="main-card" onclick="alternarModoSaldoMesas()">
+        <div class="label" id="labelSaldoMesas">Total Líquido Mesas (Toque p/ descontar planos)</div>
         <div class="value" id="saldoTotalMesas" style="color: var(--success);">R$ 0,00</div>
+        <div class="sub" id="detalheDescontoPlanos" style="font-size:0.8rem; margin-top:4px; opacity: 0.85; display:none;"></div>
       </div>
     </div>
 
@@ -97,14 +99,18 @@
         </div>
         <div class="exemplo-box" style="border-left-color: var(--success); background: rgba(16, 185, 129, 0.05)">
           <strong>Conta Real:</strong><br>
-          A apuração é automática por parte deles. O repasse líquido será calculado e efetuado direto na conta bancária durante o respectivo período de pagamento.
+          A apuração é automática por parte deles. O repasse líquido será calculated e efetuado direto na conta bancária durante o respectivo período de pagamento.
         </div>
       </div>
     </div>
 
     <div class="section-title">Minhas Avaliações / Planos</div>
-    
     <div id="mesasContainer"></div>
+  </div>
+
+  <div id="secaoVencimentos" class="hidden">
+    <div class="section-title" style="margin-top:0;">Próximos Vencimentos de Plataforma</div>
+    <div class="list-wrapper" id="vencimentosLista"></div>
   </div>
 
   <div id="stratModal" class="modal-overlay hidden" onclick="toggleModal(false)">
@@ -175,7 +181,9 @@
     
     let valoresOcultos = { conta: false, mesas: false };
     let valorRealConta = 0;
-    let valorRealMesas = 0;
+    let valorLiquidoMesas = 0;
+    let totalCustosPlanos = 0;
+    let modoSaldoComDesconto = false;
 
     function formatarMoeda(valor) {
       return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -215,7 +223,6 @@
     }
 
     function abrirDetalhesPlano(indexMesa) {
-      // AJUSTE: Acessa a lista de dentro de .dados
       const listaOrigem = dadosGlobais.mesas_proprietarias ? (dadosGlobais.mesas_proprietarias.dados || []) : [];
       const planoData = listaOrigem[indexMesa];
       if (!planoData || !planoData.detalhes) return;
@@ -237,27 +244,56 @@
       if (tipo === 'conta') {
         const el = document.getElementById('saldoTotal');
         el.textContent = valoresOcultos.conta ? '••••••' : formatarMoeda(valorRealConta);
-      } else {
-        const el = document.getElementById('saldoTotalMesas');
-        el.textContent = valoresOcultos.mesas ? '••••••' : formatarMoeda(valorRealMesas);
       }
+    }
+
+    function alternarModoSaldoMesas() {
+      modoSaldoComDesconto = !modoSaldoComDesconto;
+      atualizarExibicaoSaldoMesas();
+    }
+
+    function atualizarExibicaoSaldoMesas() {
+      const elLabel = document.getElementById('labelSaldoMesas');
+      const elSaldo = document.getElementById('saldoTotalMesas');
+      const elDetalhe = document.getElementById('detalheDescontoPlanos');
+
+      const valorFinal = modoSaldoComDesconto ? (valorLiquidoMesas - totalCustosPlanos) : valorLiquidoMesas;
+
+      if (modoSaldoComDesconto) {
+        elLabel.textContent = "Resultado Real das Mesas (Lucro - Custo de Planos)";
+        elDetalhe.style.display = 'block';
+        elDetalhe.innerHTML = `Ganhos Operacionais: <strong>${formatarMoeda(valorLiquidoMesas)}</strong> | Custos com Planos: <strong style="color:var(--danger)">-${formatarMoeda(totalCustosPlanos)}</strong>`;
+      } else {
+        elLabel.textContent = "Total Líquido Mesas (Toque p/ descontar custos)";
+        elDetalhe.style.display = 'none';
+      }
+
+      elSaldo.textContent = formatarMoeda(valorFinal);
+      elSaldo.style.color = valorFinal >= 0 ? 'var(--success)' : 'var(--danger)';
     }
 
     function alternarAba(aba) {
       abaAtual = aba;
       document.getElementById('tabConta').classList.toggle('active', aba === 'conta');
       document.getElementById('tabMesas').classList.toggle('active', aba === 'mesas');
+      document.getElementById('tabVencimentos').classList.toggle('active', aba === 'vencimentos');
       
+      document.getElementById('secaoConta').classList.add('hidden');
+      document.getElementById('secaoMesas').classList.add('hidden');
+      document.getElementById('secaoVencimentos').classList.add('hidden');
+
       if (aba === 'conta') {
         document.getElementById('secaoConta').classList.remove('hidden');
-        document.getElementById('secaoMesas').classList.add('hidden');
         document.getElementById('appTitle').textContent = "Desempenho na Bolsa";
         renderConta();
-      } else {
-        document.getElementById('secaoConta').classList.add('hidden');
+      } else if (aba === 'mesas') {
         document.getElementById('secaoMesas').classList.remove('hidden');
         document.getElementById('appTitle').textContent = "Desempenho em Mesas";
         renderMesas();
+      } else if (aba === 'vencimentos') {
+        document.getElementById('secaoVencimentos').classList.remove('hidden');
+        document.getElementById('appTitle').textContent = "Próximos Vencimentos";
+        renderVencimentos();
       }
     }
 
@@ -272,7 +308,6 @@
       container.innerHTML = '';
       const dadosConta = dadosGlobais.conta_propria || {};
       
-      // AJUSTE: Ignora a propriedade "visible" ao buscar os anos
       const anosDisponiveis = Object.keys(dadosConta)
         .filter(key => key !== 'visible')
         .sort(); 
@@ -318,7 +353,6 @@
       const container = document.getElementById('mesasContainer');
       container.innerHTML = '';
       
-      // AJUSTE: Lê o array correto de dentro de mesas_proprietarias.dados
       const listaOrigem = dadosGlobais.mesas_proprietarias ? (dadosGlobais.mesas_proprietarias.dados || []) : [];
       
       let listasMesas = listaOrigem.map((mesa, index) => {
@@ -428,13 +462,114 @@
       `;
     }
 
+    function renderVencimentos() {
+      const container = document.getElementById('vencimentosLista');
+      container.innerHTML = '';
+
+      const listaOrigem = dadosGlobais.mesas_proprietarias ? (dadosGlobais.mesas_proprietarias.dados || []) : [];
+      
+      // Filtra apenas ativas ou em avaliação
+      const contasElegiveis = listaOrigem.filter(m => {
+        const st = (m.status || '').toLowerCase();
+        return !st.includes('encerrado') && !st.includes('agendado');
+      });
+
+      if (contasElegiveis.length === 0) {
+        container.innerHTML = `<div class="list-item" style="color:var(--text-muted)">Nenhuma conta ativa ou em avaliação encontrada.</div>`;
+        return;
+      }
+
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+
+      const dadosProcessados = contasElegiveis.map(mesaData => {
+        const plat = mesaData.detalhes ? mesaData.detalhes.plataforma_vencimento : '';
+        const diaMatch = plat ? plat.match(/\d+/) : null;
+        
+        let proxVencimento = null;
+        let diasRestantes = null;
+
+        if (diaMatch) {
+          const diaVenc = parseInt(diaMatch[0], 10);
+          let ano = hoje.getFullYear();
+          let mes = hoje.getMonth();
+
+          let dataTeste = new Date(ano, mes, diaVenc);
+          
+          // Se o dia já passou neste mês, o próximo vencimento é no mês seguinte
+          if (dataTeste < hoje) {
+            dataTeste = new Date(ano, mes + 1, diaVenc);
+          }
+
+          proxVencimento = dataTeste;
+          const diffTempo = proxVencimento.getTime() - hoje.getTime();
+          diasRestantes = Math.ceil(diffTempo / (1000 * 3600 * 24));
+        }
+
+        return {
+          mesaData,
+          proxVencimento,
+          diasRestantes
+        };
+      });
+
+      // Ordena pelas contas mais próximas de vencer
+      dadosProcessados.sort((a, b) => {
+        if (a.diasRestantes === null) return 1;
+        if (b.diasRestantes === null) return -1;
+        return a.diasRestantes - b.diasRestantes;
+      });
+
+      dadosProcessados.forEach(item => {
+        const { mesaData, proxVencimento, diasRestantes } = item;
+        
+        let textoData = '-';
+        let textoDias = 'Data de vencimento não informada';
+        let classeBadge = 'negativo';
+
+        if (proxVencimento && diasRestantes !== null) {
+          textoData = proxVencimento.toLocaleDateString('pt-BR');
+          if (diasRestantes === 0) {
+            textoDias = '⚠️ Vence hoje!';
+            classeBadge = 'negativo';
+          } else if (diasRestantes === 1) {
+            textoDias = 'Falta 1 dia até o vencimento';
+            classeBadge = 'negativo';
+          } else {
+            textoDias = `Faltam ${diasRestantes} dias até o vencimento`;
+            classeBadge = diasRestantes <= 5 ? 'negativo' : 'positivo';
+          }
+        }
+
+        const statusClass = mesaData.status.toLowerCase().includes('real') ? 'ativo' : 'avaliacao';
+
+        container.innerHTML += `
+          <div class="list-item" style="flex-direction: column; align-items: flex-start; gap: 8px; padding: 14px;">
+            <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+              <div>
+                <strong style="font-size: 1rem; color: var(--text-main);">${mesaData.mesa} • ${mesaData.plano}</strong>
+                <div style="margin-top: 2px;">
+                  <span class="status-badge ${statusClass}">${mesaData.status}</span>
+                </div>
+              </div>
+              <div class="badge ${classeBadge}" style="font-size:0.85rem;">
+                ${textoData}
+              </div>
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border); width: 100%; pt: 6px; margin-top: 4px; padding-top: 6px;">
+              ⏳ <strong>${textoDias}</strong> | Conta: ${mesaData.detalhes ? mesaData.detalhes.conta_profit : '-'}
+            </div>
+          </div>
+        `;
+      });
+    }
+
     function calcularMetricasGerais() {
       let totalAcumulado = 0;
       let qtdMeses = 0;
       let mesesPositivos = 0;
       const dadosConta = dadosGlobais.conta_propria || {};
 
-      // AJUSTE: Ignora o campo "visible" no loop da conta própria
       Object.keys(dadosConta).forEach(ano => {
         if (ano !== 'visible' && Array.isArray(dadosConta[ano])) {
           dadosConta[ano].forEach(item => {
@@ -457,20 +592,25 @@
       document.getElementById('mediaMensal').textContent = formatarMoeda(media);
       document.getElementById('taxaAcerto').textContent = `${pctAcertos}% (${mesesPositivos}/${qtdMeses} M)`;
 
-      let totalMesas = 0;
-      // AJUSTE: Correção crítica para ler de dentro do nó mesas_proprietarias.dados
+      let totalMesasLq = 0;
+      let custoPlanos = 0;
+
       const listasMesas = dadosGlobais.mesas_proprietarias ? (dadosGlobais.mesas_proprietarias.dados || []) : [];
       listasMesas.forEach(mesaData => {
+        // Soma as operações líquidas
         if (mesaData.operacoes) {
-          mesaData.operacoes.forEach(op => { totalMesas += op.valor; });
+          mesaData.operacoes.forEach(op => { totalMesasLq += op.valor; });
+        }
+        // Soma o valor de todos os planos contratados
+        if (mesaData.detalhes && mesaData.detalhes.valor_plano) {
+          custoPlanos += Number(mesaData.detalhes.valor_plano) || 0;
         }
       });
 
-      valorRealMesas = totalMesas;
-      const elSaldoMesas = document.getElementById('saldoTotalMesas');
-      if (elSaldoMesas) {
-        elSaldoMesas.textContent = valoresOcultos.mesas ? '••••••' : formatarMoeda(totalMesas);
-      }
+      valorLiquidoMesas = totalMesasLq;
+      totalCustosPlanos = custoPlanos;
+
+      atualizarExibicaoSaldoMesas();
     }
 
     document.getElementById('exportBtn').onclick = () => {
@@ -501,13 +641,11 @@
         if (!response.ok) throw new Error('Erro ao carregar o arquivo JSON.');
         dadosGlobais = await response.json();
 
-        // AJUSTE: Oculta a aba Conta Própria se visible for false
         if (dadosGlobais.conta_propria && dadosGlobais.conta_propria.visible === false) {
           document.getElementById('tabConta').style.display = 'none';
           alternarAba('mesas');
         }
         
-        // AJUSTE: Oculta a aba Mesas se visible for false
         if (dadosGlobais.mesas_proprietarias && dadosGlobais.mesas_proprietarias.visible === false) {
           document.getElementById('tabMesas').style.display = 'none';
           alternarAba('conta');
@@ -536,12 +674,10 @@
 
       if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 60) {
         if (diffX > 0 && abaAtual === 'mesas') {
-          // Só permite arrastar se a aba destino estiver visível
           if (!dadosGlobais.conta_propria || dadosGlobais.conta_propria.visible !== false) {
             alternarAba('conta');
           }
         } else if (diffX < 0 && abaAtual === 'conta') {
-          // Só permite arrastar se a aba destino estiver visível
           if (!dadosGlobais.mesas_proprietarias || dadosGlobais.mesas_proprietarias.visible !== false) {
             alternarAba('mesas');
           }
