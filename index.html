@@ -260,11 +260,11 @@
       const valorFinal = modoSaldoComDesconto ? (valorLiquidoMesas - totalCustosPlanos) : valorLiquidoMesas;
 
       if (modoSaldoComDesconto) {
-        elLabel.textContent = "Resultado Real das Mesas (Lucro - Custo de Planos)";
+        elLabel.textContent = "Lucro - Custo de Planos";
         elDetalhe.style.display = 'block';
-        elDetalhe.innerHTML = `Ganhos Operacionais: <strong>${formatarMoeda(valorLiquidoMesas)}</strong> | Custos com Planos: <strong style="color:var(--danger)">-${formatarMoeda(totalCustosPlanos)}</strong>`;
+        elDetalhe.innerHTML = `Ganhos Operacionais: <strong>${formatarMoeda(valorLiquidoMesas)}</strong> <br> Custos com Planos: <strong style="color:var(--danger)">-${formatarMoeda(totalCustosPlanos)}</strong>`;
       } else {
-        elLabel.textContent = "Total Líquido Mesas (Toque p/ descontar custos)";
+        elLabel.textContent = "Total Líquido Mesas";
         elDetalhe.style.display = 'none';
       }
 
