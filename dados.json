@@ -54,12 +54,12 @@
       {
         "mesa": "Mide",
         "plano": "Exame Arrojado",
-        "status": "Agendado",
+        "status": "Fase 1",
         "qtd_contratos": 20,
         "daily_drawdown": 825.00,
         "detalhes": {
           "valor_plano": 190.00,
-          "plataforma_vencimento": "Vence dia x",
+          "plataforma_vencimento": "Vence dia 1",
           "conta_profit": "xxxx - Conta xx",
           "codigo": "CQ5WRC",
           "repasse_inicio": "-",
@@ -70,12 +70,12 @@
       {
         "mesa": "Mide",
         "plano": "Exame Arrojado",
-        "status": "Agendado",
+        "status": "Fase 1",
         "qtd_contratos": 20,
         "daily_drawdown": 825.00,
         "detalhes": {
           "valor_plano": 190.00,
-          "plataforma_vencimento": "Vence dia x",
+          "plataforma_vencimento": "Vence dia 1",
           "conta_profit": "xxxx - Conta xx",
           "codigo": "HKKN6J",
           "repasse_inicio": "-",
