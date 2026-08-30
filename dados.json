@@ -47,40 +47,9 @@
         },
         "operacoes": [
           { "mes": "Junho", "ano": "2026", "valor": 807.81 },
-          { "mes": "Julho", "valor": 847.08 }
+          { "mes": "Julho", "valor": 847.08 },
+          { "mes": "Agosto", "valor": 512.00 }
         ]
-      },
-      {
-        "mesa": "Mide",
-        "plano": "Exame Conservador 100%",
-        "status": "Avaliação Fase 2",
-        "qtd_contratos": 10,
-        "daily_drawdown": 525.00,
-        "detalhes": {
-          "valor_plano": 115.00,
-          "plataforma_vencimento": "Vence dia 1",
-          "conta_profit": "70555103 - Conta 9",
-          "codigo": "RVXS8S",
-          "repasse_inicio": "-",
-          "margem": "2.100,00"
-        },
-        "operacoes": []
-      },
-      {
-        "mesa": "Mide",
-        "plano": "Exame Agressivo 100%",
-        "status": "Avaliação Fase 1",
-        "qtd_contratos": 30,
-        "daily_drawdown": 1550.00,
-        "detalhes": {
-          "valor_plano": 600.00,
-          "plataforma_vencimento": "Vence dia 4",
-          "conta_profit": "1000331839 - Conta 1",
-          "codigo": "3VTURV",
-          "repasse_inicio": "-",
-          "margem": "6.200,00"
-        },
-        "operacoes": []
       },
       {
         "mesa": "Mide",
@@ -111,6 +80,38 @@
           "codigo": "HKKN6J",
           "repasse_inicio": "-",
           "margem": "3.300,00"
+        },
+        "operacoes": []
+      },
+      {
+        "mesa": "Mide",
+        "plano": "Exame Conservador 100%",
+        "status": "Encerrado",
+        "qtd_contratos": 10,
+        "daily_drawdown": 525.00,
+        "detalhes": {
+          "valor_plano": 115.00,
+          "plataforma_vencimento": "Vence dia 1",
+          "conta_profit": "70555103 - Conta 9",
+          "codigo": "RVXS8S",
+          "repasse_inicio": "-",
+          "margem": "2.100,00"
+        },
+        "operacoes": []
+      },
+      {
+        "mesa": "Mide",
+        "plano": "Exame Agressivo 100%",
+        "status": "Encerrado",
+        "qtd_contratos": 30,
+        "daily_drawdown": 1550.00,
+        "detalhes": {
+          "valor_plano": 600.00,
+          "plataforma_vencimento": "Vence dia 4",
+          "conta_profit": "1000331839 - Conta 1",
+          "codigo": "3VTURV",
+          "repasse_inicio": "-",
+          "margem": "6.200,00"
         },
         "operacoes": []
       },
