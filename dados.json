@@ -85,6 +85,22 @@
       },
       {
         "mesa": "Mide",
+        "plano": "Exame Arrojado 100%",
+        "status": "Encerrado",
+        "qtd_contratos": 20,
+        "daily_drawdown": 825.00,
+        "detalhes": {
+          "valor_plano": 350.00,
+          "plataforma_vencimento": "-",
+          "conta_profit": "-",
+          "codigo": "-",
+          "repasse_inicio": "-",
+          "margem": "3.300,00"
+        },
+        "operacoes": []
+      },
+      {
+        "mesa": "Mide",
         "plano": "Exame Conservador 100%",
         "status": "Encerrado",
         "qtd_contratos": 10,
