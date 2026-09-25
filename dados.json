@@ -85,7 +85,7 @@
       },
       {
         "mesa": "FundingPips",
-        "plano": "2SETP - Standard - 5k",
+        "plano": "2STEP Standard 5k",
         "status": "Fase 1",
         "qtd_contratos": "-",
         "daily_drawdown": 250.00,
@@ -101,7 +101,7 @@
       },
       {
         "mesa": "FundingPips",
-        "plano": "2SETP - Flex - 5k",
+        "plano": "2STEP Flex 5k",
         "status": "Encerrado",
         "qtd_contratos": "-",
         "daily_drawdown": 200.00,
