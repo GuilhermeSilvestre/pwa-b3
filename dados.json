@@ -87,7 +87,7 @@
         "mesa": "FundingPips",
         "plano": "2SETP - Standard - 5k",
         "status": "Fase 1",
-        "qtd_contratos": -,
+        "qtd_contratos": "-",
         "daily_drawdown": 250.00,
         "detalhes": {
           "valor_plano": 160.00,
@@ -103,7 +103,7 @@
         "mesa": "FundingPips",
         "plano": "2SETP - Flex - 5k",
         "status": "Encerrado",
-        "qtd_contratos": -,
+        "qtd_contratos": "-",
         "daily_drawdown": 200.00,
         "detalhes": {
           "valor_plano": 130.00,
