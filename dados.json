@@ -67,7 +67,54 @@
         },
         "operacoes": []
       },
-      
+      {
+        "mesa": "Mide",
+        "plano": "Exame Conservador 100%",
+        "status": "Agendado",
+        "qtd_contratos": 10,
+        "daily_drawdown": 525.00,
+        "detalhes": {
+          "valor_plano": 230.00,
+          "plataforma_vencimento": "-",
+          "conta_profit": "-",
+          "codigo": "-",
+          "repasse_inicio": "-",
+          "margem": "2.100,00"
+        },
+        "operacoes": []
+      },
+      {
+        "mesa": "FundingPips",
+        "plano": "2SETP - Standard - 5k",
+        "status": "Fase 1",
+        "qtd_contratos": -,
+        "daily_drawdown": 250.00,
+        "detalhes": {
+          "valor_plano": 160.00,
+          "plataforma_vencimento": "-",
+          "conta_profit": "-",
+          "codigo": "-",
+          "repasse_inicio": "-",
+          "margem": "500,00"
+        },
+        "operacoes": []
+      },
+      {
+        "mesa": "FundingPips",
+        "plano": "2SETP - Flex - 5k",
+        "status": "Encerrado",
+        "qtd_contratos": -,
+        "daily_drawdown": 200.00,
+        "detalhes": {
+          "valor_plano": 130.00,
+          "plataforma_vencimento": "-",
+          "conta_profit": "-",
+          "codigo": "-",
+          "repasse_inicio": "-",
+          "margem": "600,00"
+        },
+        "operacoes": []
+      },
       {
         "mesa": "Mide",
         "plano": "Exame Arrojado",
