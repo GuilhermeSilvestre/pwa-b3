@@ -70,14 +70,14 @@
       {
         "mesa": "Mide",
         "plano": "Exame Conservador 100%",
-        "status": "Agendado",
+        "status": "Fase 1",
         "qtd_contratos": 10,
         "daily_drawdown": 525.00,
         "detalhes": {
           "valor_plano": 230.00,
-          "plataforma_vencimento": "-",
-          "conta_profit": "-",
-          "codigo": "-",
+          "plataforma_vencimento": "Vence dia 28",
+          "conta_profit": "70606897 - Conta 23",
+          "codigo": "V9CCP0",
           "repasse_inicio": "-",
           "margem": "2.100,00"
         },
