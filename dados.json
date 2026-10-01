@@ -48,7 +48,8 @@
         "operacoes": [
           { "mes": "Junho", "ano": "2026", "valor": 807.81 },
           { "mes": "Julho", "valor": 847.08 },
-          { "mes": "Agosto", "valor": 728.19 }
+          { "mes": "Agosto", "valor": 728.19 },
+          { "mes": "Setembro", "valor": 138.11 }
         ]
       },
       {
